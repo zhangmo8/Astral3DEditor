@@ -1,17 +1,17 @@
-# ES 3DEditor
+# Astral 3D Editor
 
 🌍
 *[English](README.md)*
 🌍
 *[简体中文](README.zh-cn.md)*
 
-### Based on vue3 and ThreeJs, see [Doc](http://editor-doc.mhbdng.cn/) for details
+### Based on vue3 and ThreeJs, see [Doc](http://editor-doc.astraljs.com/) for details
 
 <div style="text-align: center">
 
 ![Static Badge](https://img.shields.io/badge/Vue-3.3.4-green)
 ![Static Badge](https://img.shields.io/badge/NaiveUI-2.34.4-green)
-![Static Badge](https://img.shields.io/badge/ThreeJS-r163-8732D7)
+![Static Badge](https://img.shields.io/badge/ThreeJS-r170-8732D7)
 ![Static Badge](https://img.shields.io/badge/Cesium-1.107.0-8732D7)
 ![Static Badge](https://img.shields.io/badge/UnoCSS-0.46.5-8732D7)
 <br />
@@ -20,16 +20,6 @@
 </div>
 
 ***
-
-## WeChat Group
-<img src="https://upyun.mhbdng.cn/static/images/WeChatGroup.jpg" width="500px">
-
-Click [here](https://upyun.mhbdng.cn/static/images/WeChatGroup.jpg) view the latest group invitation pictures。
-
-***
-
-## Back-end code
-* Golang's implementation: [ES3DEditorGoBack](https://github.com/mlt131220/ES3DEditorGoBack)
 
 ## Peculiarity：
 - [x] Model import display, support OBJ, FBX, GLTF, GLB, RVT, IFC, SEA, 3DM, 3DS, 3MF, AMF, DAE, DRC, PLY, SVG, JSON and other 30+ formats;
@@ -40,6 +30,7 @@ Click [here](https://upyun.mhbdng.cn/static/images/WeChatGroup.jpg) view the lat
 - [x] Upyun USS store;
 - [x] Golang + MySQL backend support;
 - [x] Run script;
+- [x] Plug-in system;
 - [ ] Animation editor;
 - [ ] Physical engine support;
 - [ ] Particle system support;
@@ -87,14 +78,17 @@ Click [here](https://upyun.mhbdng.cn/static/images/WeChatGroup.jpg) view the lat
 [//]: # (|-- yarn.lock                    )
 [//]: # (```)
 
+## Back-end code
+* Golang's implementation: [Astral3DEditorGoBack](https://github.com/mlt131220/ES3DEditorGoBack)
+
 ## Quick start
 ```shell
-   git clone https://github.com/mlt131220/ES-3DEditor.git
+   git clone https://github.com/mlt131220/Astral3DEditor.git
 ```
 
 ## Run
 ```shell
-    cd ES-3DEditor
+    cd Astral3DEditor
     yarn install
     yarn run dev
 ```
@@ -106,11 +100,18 @@ Tips:
     yarn run build
 ```
 
+## WeChat Group
+<img src="https://upyun.astraljs.com/static/images/WeChatGroup.jpg" width="500px">
+
+Click [here](https://upyun.astraljs.com/static/images/WeChatGroup.jpg) view the latest group invitation pictures。
+
+***
+
 ## Thanks for sponsoring🌹🌹🌹
 If the project is to help to you, please leave you in [here](https://github.com/mlt131220/ES-3DEditor/issues/2) site, let more people see. Your reply will be the motivation for me to continue updating and maintaining。 </br></br>
 This project code is completely open source and free to learn & use, if you are happy and want to donate, you can scan the QR code below：</br>
-<img src="https://upyun.mhbdng.cn/static/images/alipay.jpg" width="320px">
-<img src="https://upyun.mhbdng.cn/static/images/wepay.jpg" width="320px">
+<img src="https://upyun.astraljs.com/static/images/alipay.jpg" width="320px">
+<img src="https://upyun.astraljs.com/static/images/wepay.jpg" width="320px">
 
 ## Declaration of interest
 This project is open source based on the Apache-2.0 protocol, anyone can use it for free, but in any case, please do not use it for commercial purposes, please contact the author for authorization.
@@ -120,4 +121,4 @@ This project is only for learning and exchange, do not use for any illegal purpo
 The author assumes no legal responsibility for any problems arising from the use of this project (original project or after secondary creation).
 
 ## Star History
-[![Star History Chart](https://api.star-history.com/svg?repos=mlt131220/ES-3DEditor&type=Date)](https://star-history.com/#mlt131220/ES-3DEditor&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=mlt131220/Astral3DEditor&type=Date)](https://star-history.com/#mlt131220/Astral3DEditor&Date)
