@@ -249,6 +249,7 @@ export class Package {
 
         const sceneZipData: SourceData[] = [];
         // 处理背景和环境贴图
+        if (!sceneJson.images) sceneJson.images = [];
         sceneJson.images = sceneJson.images.map((image) => this.handleImage(image, sceneZipData));
 
         // 保存场景中需打包的group数组
