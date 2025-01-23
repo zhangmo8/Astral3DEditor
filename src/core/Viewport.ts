@@ -281,10 +281,9 @@ export class Viewport {
 
     /**
      * 加载环境和背景
-     * @param definition 分辨率
      */
-    loadDefaultEnvAndBackground(definition = 2) {
-        window.editor.resource.loadURLTexture(`/upyun/assets/texture/hdr/kloofendal_48d_partly_cloudy_puresky_${definition}k.hdr`, (texture: THREE.Texture) => {
+    loadDefaultEnvAndBackground() {
+        window.editor.resource.loadURLTexture(`/static/resource/hdr/kloofendal_48d_partly_cloudy_puresky_2k.hdr`, (texture: THREE.Texture) => {
             texture.mapping = THREE.EquirectangularReflectionMapping;
             this.scene.environment = texture;
             this.scene.background = texture;
