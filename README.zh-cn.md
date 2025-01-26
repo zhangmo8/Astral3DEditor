@@ -19,6 +19,15 @@
 
 </div>
 
+***
+
+## 交流
+<img src="https://upyun.astraljs.com/static/images/WeChatGroup.jpg" width="500px">
+
+点击[这里](https://upyun.astraljs.com/static/images/WeChatGroup.jpg)查看最新群邀请图片。
+
+***
+
 ## 特性：
 - [x] 模型导入展示，支持OBJ、FBX、GLTF、GLB、RVT、IFC、SEA、3DM、3DS、3MF、AMF、DAE、DRC、PLY、SVG、JSON等30+格式;
 - [x] BIM模型（RVT、IFC）轻量化展示;
@@ -97,15 +106,6 @@ Tips:
 ```shell
     yarn run build
 ```
-
-***
-
-## 交流
-<img src="https://upyun.astraljs.com/static/images/WeChatGroup.jpg" width="500px">
-
-点击[这里](https://upyun.astraljs.com/static/images/WeChatGroup.jpg)查看最新群邀请图片。
-
-***
 
 ## 感谢 || 赞助🌹🌹🌹
 如果本项目帮助到了你，请在[这里](https://github.com/mlt131220/ES-3DEditor/issues/2)留下你的网址，让更多的人看到。您的回复将会是我继续更新维护下去的动力。 </br></br>

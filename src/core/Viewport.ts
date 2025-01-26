@@ -13,7 +13,6 @@ import ViewCube from "@/core/Viewport.Cube";
 import {XR} from '@/core/Viewport.XR';
 import {ViewportSignals} from "@/core/Viewport.Signals";
 import {ViewportPathTracer} from './Viewport.PathTracer';
-import {ViewportCameraManage} from './Viewport.CameraManage';
 import {TweenManger} from "@/core/utils/TweenManager";
 import {ShaderMaterialManager} from "@/core/shaderMaterial/ShaderMaterialManager";
 import {Package} from "@/core/loader/Package";
@@ -64,7 +63,6 @@ export class Viewport {
 
     private modules: {
         xr: XR,
-        cameraManage: ViewportCameraManage,
         controls: CameraControls,
         transformControls: TransformControls,
         effect:ViewportEffect,
@@ -238,7 +236,6 @@ export class Viewport {
 
         return {
             xr: new XR(transformControls),
-            cameraManage: new ViewportCameraManage(this),
             controls,
             transformControls,
             effect:new ViewportEffect(this),

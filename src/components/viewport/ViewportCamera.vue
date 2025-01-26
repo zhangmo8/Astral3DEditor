@@ -66,50 +66,6 @@ interface IOption {
   children?: IOption[]
 }
 
-const defaultCamera = [
-  {
-    uuid:"divider",
-    type:"divider",
-    label:cpt("layout.header.OrthographicCamera")
-  },
-  {
-    uuid: "Top",
-    label: cpt("layout.scene.toolbar.Top"),
-    icon:OpenPanelFilledTop,
-    shortcuts:"ALT+J"
-  },
-  {
-    uuid: "Bottom",
-    label: cpt("layout.scene.toolbar.Bottom"),
-    icon:OpenPanelFilledBottom,
-    shortcuts:"ALT+SHIFT+J"
-  },
-  {
-    uuid: "Left",
-    label: cpt("layout.scene.toolbar.Left"),
-    icon:OpenPanelFilledLeft,
-    shortcuts:"ALT+K"
-  },
-  {
-    uuid: "Right",
-    label: cpt("layout.scene.toolbar.Right"),
-    icon:OpenPanelFilledRight,
-    shortcuts:"ALT+SHIFT+K"
-  },
-  {
-    uuid: "Front",
-    label: cpt("layout.scene.toolbar.Front"),
-    icon:RotateCounterclockwiseAlt,
-    shortcuts:"ALT+H"
-  },
-  {
-    uuid: "Back",
-    label: cpt("layout.scene.toolbar.Back"),
-    icon:RotateClockwiseAlt,
-    shortcuts:"ALT+SHIFT+H"
-  }
-]
-
 const current = ref<IOption>({
   label: "",
   uuid: ""
@@ -121,38 +77,7 @@ function handlerChange(value: IOption) {
   // @ts-ignore
   current.value = value;
 
-  const cameraManage = window.viewer.modules.cameraManage;
   switch (value.uuid){
-    case "Front":
-      cameraManage.front().then((camera:Camera) => {
-        window.editor.setViewportCamera(camera.uuid);
-      })
-      break;
-    case "Back":
-      cameraManage.rear().then((camera:Camera) => {
-        window.editor.setViewportCamera(camera.uuid);
-      })
-      break;
-    case "Left":
-      cameraManage.left().then((camera:Camera) => {
-        window.editor.setViewportCamera(camera.uuid);
-      })
-      break;
-    case "Right":
-      cameraManage.right().then((camera:Camera) => {
-        window.editor.setViewportCamera(camera.uuid);
-      })
-      break;
-    case "Top":
-      cameraManage.top().then((camera:Camera) => {
-        window.editor.setViewportCamera(camera.uuid);
-      })
-      break;
-    case "Bottom":
-      cameraManage.bottom().then((camera:Camera) => {
-        window.editor.setViewportCamera(camera.uuid);
-      })
-      break;
     default:
       window.editor.setViewportCamera(current.value.uuid);
       break;
@@ -166,9 +91,6 @@ function handlerOptionsUpdate() {
   const cameras = window.editor.cameras;
   for (const key in cameras) {
     const camera = cameras[key];
-
-    // 六视图相机不展示
-    if(camera.name === "View OrthographicCamera") continue;
 
     if(camera.uuid === window.editor.camera.uuid){
       // 默认透视相机
@@ -189,8 +111,6 @@ function handlerOptionsUpdate() {
       shortcuts:""
     })
   }
-
-  options.value.push(...defaultCamera);
 
   if(sceneCamera.value.length > 0){
     sceneCamera.value.unshift({
