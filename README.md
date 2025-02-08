@@ -21,6 +21,13 @@
 
 ***
 
+## WeChat Group
+<img src="https://upyun.astraljs.com/static/images/WeChatGroup.jpg" width="500px">
+
+Click [here](https://upyun.astraljs.com/static/images/WeChatGroup.jpg) view the latest group invitation pictures。
+
+***
+
 ## Peculiarity：
 - [x] Model import display, support OBJ, FBX, GLTF, GLB, RVT, IFC, SEA, 3DM, 3DS, 3MF, AMF, DAE, DRC, PLY, SVG, JSON and other 30+ formats;
 - [x] BIM model (RVT, IFC) lightweight display;
@@ -99,13 +106,6 @@ Tips:
 ```shell
     yarn run build
 ```
-
-## WeChat Group
-<img src="https://upyun.astraljs.com/static/images/WeChatGroup.jpg" width="500px">
-
-Click [here](https://upyun.astraljs.com/static/images/WeChatGroup.jpg) view the latest group invitation pictures。
-
-***
 
 ## Thanks for sponsoring🌹🌹🌹
 If the project is to help to you, please leave you in [here](https://github.com/mlt131220/ES-3DEditor/issues/2) site, let more people see. Your reply will be the motivation for me to continue updating and maintaining。 </br></br>
