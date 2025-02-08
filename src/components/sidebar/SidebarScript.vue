@@ -1,5 +1,5 @@
 <template>
-  <EsDocument url="http://editor-doc.mhbdng.cn/guide/components/script.html" />
+  <EsDocument url="http://editor-doc.astraljs.com/guide/components/script.html" />
 
   <div v-if="isSelectObject3D">
     <n-list hoverable clickable>

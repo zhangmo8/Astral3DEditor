@@ -1,6 +1,6 @@
 export const Source = `
 /**
- * @document http://editor-doc.mhbdng.cn/core/script.html
+ * @document http://editor-doc.astraljs.com/core/script.html
  */
  
  function init() {}

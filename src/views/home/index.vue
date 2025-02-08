@@ -53,7 +53,7 @@ const menuOptions: MenuOption[] = [
   },
   {
     label: () => h('a', {
-      href: 'http://editor-doc.mhbdng.cn',
+      href: 'http://editor-doc.astraljs.com',
       target: '_blank'
     },  t("home.Usage Document")),
     key: 'usage-document',
