@@ -93,7 +93,7 @@ onMounted(() => {
             </n-tag>
           </div>
 
-          <img :src="project.coverPicture || '/static/images/carousel/18.png'" class="h-full cursor-pointer hover:transform-scale-140 transition-all-200" @click="editScene(project.id)">
+          <img :src="project.coverPicture || '/static/images/carousel/Astral3DEditor.png'" class="h-full cursor-pointer hover:transform-scale-140 transition-all-200" @click="editScene(project.id)">
         </template>
       </template>
 

@@ -6,7 +6,7 @@ import {ArrowLeft, ArrowRight} from '@vicons/carbon';
 <template>
   <n-carousel show-arrow mousewheel autoplay draggable effect="custom" :transition-props="{name: 'creative'}"
               class="w-full h-25vh">
-    <img class="carousel-img" src="/static/images/carousel/18.png">
+    <img class="carousel-img" src="/static/images/carousel/Astral3DEditor.png">
     <img class="carousel-img" src="/static/images/carousel/54.png">
 
     <template #arrow="{ prev, next }">

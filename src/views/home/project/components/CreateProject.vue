@@ -185,7 +185,7 @@ onMounted(() => {
                     :style="{border:currentExample === null ? '1px solid var(--n-color-target)' : '1px solid transparent'}"
                     :footer-style="`background:var(${currentExample === null ? '--n-color-target' : '--n-action-color'});padding:10px;`">
               <template #cover>
-                <img src="/static/images/carousel/18.png" :alt="t('home.Empty project')"
+                <img src="/static/images/carousel/Astral3DEditor.png" :alt="t('home.Empty project')"
                      class="h-110px hover:transform-scale-140 transition-all-200">
               </template>
 
@@ -203,7 +203,7 @@ onMounted(() => {
                 <n-tag type="success" :bordered="false" class="absolute top-10px right-10px z-10">
                   {{ example.sceneType }}
                 </n-tag>
-                <img :src="example.coverPicture || '/static/images/carousel/18.png'" :alt="example.sceneName"
+                <img :src="example.coverPicture || '/static/images/carousel/Astral3DEditor.png'" :alt="example.sceneName"
                      class="h-110px hover:transform-scale-140 transition-all-200">
               </template>
 
@@ -217,7 +217,7 @@ onMounted(() => {
             <n-divider vertical class="!h-auto"/>
 
             <div class="h-full w-320px flex flex-col justify-start ml-10px">
-              <img :src="currentExample?.coverPicture || '/static/images/carousel/18.png'" class="w-full">
+              <img :src="currentExample?.coverPicture || '/static/images/carousel/Astral3DEditor.png'" class="w-full">
 
               <h3 class="mt-10px mb-8px">{{ currentExample?.sceneName || t("home.Empty project") }}</h3>
               <p class="h-100px overflow-y-auto">
