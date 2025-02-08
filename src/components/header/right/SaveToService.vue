@@ -42,7 +42,7 @@ function save(){
         const blob = await f.blob();
         const res = await fetchUpload({
           file: new File([blob],`${sceneInfoStore.data.sceneName}-${Date.now()}.png`, { type: blob.type }),
-          biz: `ES3DEditor/screenshot/${biz}`,
+          biz: `astral/3DEditor/screenshot/${biz}`,
         })
         if(res.error === null){
           sceneInfoStore.setDataFieldValue("coverPicture",res.data);
