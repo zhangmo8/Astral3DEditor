@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+// 原生three的扩展
+import './expansion';
 import { useSignal} from '@/hooks/useSignal';
 import {Storage} from "@/core/Storage";
 import { Config } from './Config';

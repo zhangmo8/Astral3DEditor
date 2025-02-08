@@ -82,9 +82,15 @@ function refreshUI() {
 
   function addObjects(object3D) {
     const childArr: TreeOption[] = [];
+
+    if (object3D.ignore) return childArr;
+
     //for循环 为大场景提升遍历效率
     for (let i = 0, l = object3D.children.length; i < l; i++) {
       const child = object3D.children[i];
+
+      if (child.ignore) continue;
+
       const data: TreeOption = {
         label: escapeHTML(child.name),
         key: child.id,

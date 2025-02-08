@@ -257,39 +257,15 @@ export class Package {
 
         // 处理 scene 子级
         window.viewer.scene.children.forEach((child) => {
+            if(child.ignore) return;
+
             if (child.type === "Group" || child.children?.length > 0) {
                 sceneJson.object.children?.push(child.uuid);
 
                 child.groupLayer = 1;
                 groupArr.push(child);
 
-                //如果子级含有skeleton,子级不拆分
-                //if(child.skeleton /* && child.isSkinnedMesh */) return;
-                //
-                // const traverse = (actor) => {
-                //     for(let i = actor.children.length;i > 0;i--){
-                //         const c = actor.children[i - 1];
-                //
-                //         //如果含有skeleton,子级不拆分
-                //         if(child.skeleton /* && child.isSkinnedMesh */) {
-                //             groupArr.push(c);
-                //             continue;
-                //         }
-                //
-                //         if (c.type === "Group" || c.children?.length > 0) {
-                //             c.groupLayer = c.parent.groupLayer + 1;
-                //             if (c.groupLayer <= <number>packConfig.layer || packConfig.layer === 0) {
-                //                 groupArr.push(c);
-                //             }
-                //         }
-                //
-                //         traverse(c);
-                //     }
-                // }
-
-                // traverse(child);
-
-                child.traverse((c) => {
+                child.traverseByCondition((c) => {
                     // 不递归自身
                     if (c.uuid === child.uuid) return;
 
@@ -299,6 +275,8 @@ export class Package {
                             groupArr.push(c);
                         }
                     }
+                },(c) => {
+                    return !c.ignore;
                 })
             } else {
                 this.handleMesh(<Mesh>child, sceneJson, sceneZipData);

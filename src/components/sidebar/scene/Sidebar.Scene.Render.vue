@@ -102,10 +102,6 @@ function createRenderer() {
   // @ts-ignore
   currentRenderer.shadowMap.type = renderModel.shadowType;
 
-  // currentRenderer.autoClearColor = true;
-  // currentRenderer.autoClearDepth = true;
-  // currentRenderer.autoClearStencil = true;
-
   useDispatchSignal("rendererCreated", currentRenderer);
   useDispatchSignal("rendererUpdated");
 }

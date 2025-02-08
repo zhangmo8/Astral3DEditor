@@ -88,8 +88,9 @@ export class Viewport {
 
         /** helpers **/
         this.grid = new THREE.Group();
+        this.grid.ignore = true;
         this.initGrid();
-        this.sceneHelpers.add(this.grid);
+        this.scene.add(this.grid);
 
         //选中时的包围框
         this.selectionBox = new THREE.Box3Helper(this.box);
@@ -295,9 +296,9 @@ export class Viewport {
         this.raycaster.setFromCamera(mouse, this.camera);
 
         const objects: THREE.Object3D[] = [];
-        this.scene.traverseVisible(function (child) {
+        this.scene.traverseByCondition(function (child) {
             objects.push(child);
-        });
+        }, (child) => !child.ignore && child.visible);
 
         this.sceneHelpers.traverseVisible(function (child) {
             if (child.name === 'picker') objects.push(child);
@@ -433,8 +434,7 @@ export class Viewport {
         startTime = performance.now();
         const deltaTime = endTime - startTime;
 
-        // this.renderer.autoClear = false;
-        // this.renderer.clear();
+        this.renderer.clearDepth();
 
         if(this.modules.effect.enabled){
             this.modules.effect.render(deltaTime);
@@ -442,9 +442,7 @@ export class Viewport {
             this.renderer.render(this.scene, window.editor.viewportCamera);
         }
 
-        // this.renderer.clearDepth();
-
-        // 非默认相机不渲染网格和辅助
+        // 非默认相机不渲染辅助
         if (this.camera === window.editor.viewportCamera) {
             if (this.showSceneHelpers) this.renderer.render(this.sceneHelpers, this.camera);
         }

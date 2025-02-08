@@ -406,9 +406,9 @@ export class Viewport {
         this.raycaster.setFromCamera(mouse, this.camera);
 
         const objects: THREE.Object3D[] = [];
-        this.scene.traverseVisible(function (child) {
+        this.scene.traverseByCondition(function (child) {
             objects.push(child);
-        });
+        }, (child) => !child.ignore && child.visible);
 
         return this.raycaster.intersectObjects(objects, false);
     }
