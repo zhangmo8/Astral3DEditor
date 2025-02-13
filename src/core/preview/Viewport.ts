@@ -367,6 +367,7 @@ export class Viewport {
     };
 
     load(json:ISceneJson) {
+        console.log(json);
         const project = json.project;
 
         if (project.xr !== undefined) this.renderer.xr.enabled = project.xr;

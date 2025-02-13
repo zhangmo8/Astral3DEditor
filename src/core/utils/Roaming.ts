@@ -282,7 +282,7 @@ export default class Roaming {
                     })
                 }
 
-                this.scene.traverse(c => {
+                this.scene.traverseByCondition(c => {
                     // requestIdleCallback(()=>{
                         // @ts-ignore 只合并网格
                         if (c.geometry) {
@@ -297,7 +297,7 @@ export default class Roaming {
                             }
                         }
                     // })
-                })
+                }, (child) => !child.ignore && child.visible)
 
                 // requestIdleCallback(()=>{
                     this.mergeWorker.postMessage({

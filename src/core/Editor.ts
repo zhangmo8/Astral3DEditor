@@ -163,20 +163,22 @@ class Editor {
 		dispatch('sceneGraphChanged');
 	}
 
-	removeObject(object) {
-		if (object.parent === null) return; // avoid deleting the camera or scene
+    removeObject(object) {
+        // 由于含有ignore属性的对象与业务关联，不受scene管控
+        // object.parent === null避免删除相机或场景
+        if (object.parent === null || object.ignore) return;
 
-		const scope = this;
-		object.traverse(function (child) {
-			scope.removeCamera(child);
-			scope.removeHelper(child);
-			if (child.material !== undefined) scope.removeMaterial(child.material);
-		});
-		object.parent.remove(object);
+        object.traverseByCondition((child) => {
+            this.removeCamera(child);
+            this.removeHelper(child);
+            if (child.material !== undefined) this.removeMaterial(child.material);
+        }, (child) => !child.ignore);
 
-		dispatch('objectRemoved', object);
-		dispatch('sceneGraphChanged');
-	}
+        object.parent.remove(object);
+
+        dispatch('objectRemoved', object);
+        dispatch('sceneGraphChanged');
+    }
 
 	addGeometry(geometry) {
 		this.geometries[geometry.uuid] = geometry;
@@ -432,10 +434,9 @@ class Editor {
 		this.scene.environment = null;
 		this.scene.fog = null;
 
-		let objects = this.scene.children;
-		while (objects.length > 0) {
-			this.removeObject(objects[0]);
-		}
+        this.scene.children.forEach(child => {
+            this.removeObject(child);
+        })
 
 		this.geometries = {};
 		this.materials = {};
