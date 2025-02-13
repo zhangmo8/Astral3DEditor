@@ -10,11 +10,13 @@ import { History as _History } from './History';
 import { Selector } from './Viewport.Selector';
 import {useDrawingStoreWithOut} from "@/store/modules/drawing";
 import {DefaultSceneData, useSceneInfoStoreWithOut} from "@/store/modules/sceneInfo";
+import { useProjectConfigStoreWithOut } from "@/store/modules/projectConfig";
 
 const { add:addSignal,dispatch, setActive } = useSignal();
 
 const drawingStore = useDrawingStoreWithOut();
 const sceneInfoStore = useSceneInfoStoreWithOut();
+const projectConfigStore = useProjectConfigStoreWithOut();
 
 const _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 100 * 1000);
 _DEFAULT_CAMERA.position.set(0, 5, 10);
@@ -520,12 +522,12 @@ class Editor {
 		return {
 			metadata: {},
 			project: {
-				shadows: this.config.getRendererItem('shadows'),
-				shadowType: this.config.getRendererItem('shadowType'),
-				xr: this.config.getKey('xr'),
-				physicallyCorrectLights: this.config.getRendererItem('physicallyCorrectLights'),
-				toneMapping: this.config.getRendererItem('toneMapping'),
-				toneMappingExposure: this.config.getRendererItem('toneMappingExposure'),
+                antialias: projectConfigStore.getRendererItem('antialias'),
+                shadows: projectConfigStore.getRendererItem('shadows'),
+                shadowType: projectConfigStore.getRendererItem('shadowType'),
+                xr: projectConfigStore.xr,
+                toneMapping: projectConfigStore.getRendererItem('toneMapping'),
+                toneMappingExposure: projectConfigStore.getRendererItem('toneMappingExposure'),
 			},
 			camera: this.camera.toJSON(),
 			scene: this.scene.toJSON(),

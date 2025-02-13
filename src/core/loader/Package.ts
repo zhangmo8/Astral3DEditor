@@ -4,17 +4,21 @@
  * @date 2024-07-31
  * @version 4.0.0
  */
-import { ObjectLoader, Mesh, Vector3, Group,Bone } from "three";
+import { ObjectLoader, Mesh, Vector3, Group, Bone } from "three";
 import JSZip from "jszip";
-import {BASE64_TYPES, TYPED_ARRAYS} from "@/utils/common/constant";
-import {unzip, zip} from "@/utils/common/pako";
-import {fetchController} from "@/utils/service/fetchController";
-import {PackageSkeleton} from "@/core/loader/Package.Skeleton";
+import { BASE64_TYPES, TYPED_ARRAYS } from "@/utils/common/constant";
+import { unzip, zip } from "@/utils/common/pako";
+import { fetchController } from "@/utils/service/fetchController";
+import { PackageSkeleton } from "@/core/loader/Package.Skeleton";
+import { useProjectConfigStoreWithOut } from "@/store/modules/projectConfig";
+import { useDispatchSignal } from "@/hooks/useSignal";
+// @ts-ignore
+import { IConfigJson, ISceneJson } from "~/scene";
 
 interface IPackConfig {
     name: string; // 首包名称
     layer?: number; // 拆分的最深层级 0:拆分至最深层
-    sceneInfo?:any; // 场景其他信息（存入首包）
+    sceneInfo?: any; // 场景其他信息（存入首包）
     zipUploadFun: (zip: File) => Promise<any>; // 压缩包上传接口函数，多压缩包
     onProgress?: (progress: number) => void; // 打包进度回调
     onComplete?: (_: { firstUploadResult: any, totalSize: number, totalZipNumber: number }) => void; // 打包完成回调
@@ -22,7 +26,7 @@ interface IPackConfig {
 
 interface IUnpackConfig {
     url: string, // 首包url
-    onSceneLoad?: (sceneJson:ISceneJson,fromJSONResult:IFromJSONResult) => void, // 场景首包加载完成回调
+    onSceneLoad?: (sceneJson: ISceneJson, configJson: IConfigJson, fromJSONResult: IFromJSONResult) => void, // 场景首包加载完成回调
     onProgress?: (progress: number) => void; // 场景加载进度回调
     onComplete?: () => void // 场景加载完成回调.
 }
@@ -43,6 +47,8 @@ interface GroupJson {
         groupChildren: string[]
     };
 }
+
+const projectConfigStore = useProjectConfigStoreWithOut();
 
 export class Package {
     // 控制fetch并发
@@ -149,8 +155,8 @@ export class Package {
      * @param json group json
      * @param zipData 存储待压缩数据
      */
-    handleMesh(mesh:Mesh, json, zipData) {
-        const meshJson = mesh.toJSON();
+    handleMesh(mesh: Mesh, json, zipData) {
+        const meshJson: any = mesh.toJSON();
 
         // 处理几何数据
         if (meshJson.geometries) {
@@ -206,7 +212,7 @@ export class Package {
         }
 
         // 处理骨骼动画
-        if(meshJson.skeletons){
+        if (meshJson.skeletons) {
             meshJson.skeletons.forEach((skeleton) => {
                 if (this.skeletonsArr.indexOf(skeleton.uuid) === -1) {
                     this.skeletonsArr.push(skeleton.uuid);
@@ -229,10 +235,10 @@ export class Package {
     /**
      * 按 group 分组各打包为1个zip文件
      * @param {IPackConfig} packConfig 
-     * @remarks 首包保存scene基本信息 和 图纸信息
+     * @remarks 首包保存scene基本信息 和 图纸信息 及 基础配置
      * @remarks 前面已打包的几何数据和材质贴图不会再次打包
      */
-    async pack(packConfig: IPackConfig){
+    async pack(packConfig: IPackConfig) {
         packConfig.layer = packConfig.layer || 0;
 
         this.totalSize = 0;
@@ -257,7 +263,7 @@ export class Package {
 
         // 处理 scene 子级
         window.viewer.scene.children.forEach((child) => {
-            if(child.ignore) return;
+            if (child.ignore) return;
 
             if (child.type === "Group" || child.children?.length > 0) {
                 sceneJson.object.children?.push(child.uuid);
@@ -275,7 +281,7 @@ export class Package {
                             groupArr.push(c);
                         }
                     }
-                },(c) => {
+                }, (c) => {
                     return !c.ignore;
                 })
             } else {
@@ -304,27 +310,33 @@ export class Package {
             });
 
             // 标记
-            sceneZipData.push({name: "drawingMark.txt", drawing: packConfig.sceneInfo.drawingInfo.markList});
+            sceneZipData.push({ name: "drawingMark.txt", drawing: packConfig.sceneInfo.drawingInfo.markList });
 
             // 图片信息(宽高信息等，以便于其他地方使用可计算标记左上距离百分比)
-            sceneZipData.push({name: "drawingImgInfo.json", drawing: packConfig.sceneInfo.drawingInfo.imgInfo});
+            sceneZipData.push({ name: "drawingImgInfo.json", drawing: packConfig.sceneInfo.drawingInfo.imgInfo });
 
             packConfig.sceneInfo.drawingInfo = null;
         }
 
+        // 项目配置
+        sceneZipData.push({
+            name: "config.json",
+            json: JSON.stringify({
+                // 项目运行是否启用xr
+                xr: projectConfigStore.xr,
+                // 项目渲染器配置
+                renderer: projectConfigStore.renderer,
+                // 项目后处理配置
+                effect: projectConfigStore.effect,
+            })
+        });
+
         const totalNum = groupArr.length + 1;
         sceneZipData.push({
-            name: "scene.json", json: JSON.stringify({
+            name: "scene.json",
+            json: JSON.stringify({
                 // 解包时需要还原的编辑器场景信息
                 metadata: window.editor.metadata,
-                project: {
-                    shadows: window.editor.config.getRendererItem('shadows'),
-                    shadowType: window.editor.config.getRendererItem('shadowType'),
-                    xr: window.editor.config.getKey('xr'),
-                    physicallyCorrectLights: window.editor.config.getRendererItem('physicallyCorrectLights'),
-                    toneMapping: window.editor.config.getRendererItem('toneMapping'),
-                    toneMappingExposure: window.editor.config.getRendererItem('toneMappingExposure'),
-                },
                 camera: window.viewer.camera.toJSON(),
                 scene: sceneJson,
                 scripts: window.editor.scripts,
@@ -351,7 +363,7 @@ export class Package {
             g.children = [];
 
             // 空 group
-            let json = g.toJSON();
+            let json: any = g.toJSON();
             json.geometries = [];
             json.images = [];
             json.textures = [];
@@ -363,7 +375,8 @@ export class Package {
             const zipData: SourceData[] = [];
 
             group.children.forEach((child) => {
-                if(groupArr.find(item => item.uuid === child.uuid)){
+                // 被groupArr包含的子级后面会单独处理，此处引用其uuid
+                if (groupArr.find(item => item.uuid === child.uuid)) {
                     json.object.children?.push(child.uuid);
                     return;
                 }
@@ -395,7 +408,7 @@ export class Package {
             progress++;
             packConfig.onProgress && packConfig.onProgress(parseFloat((progress / groupArr.length * 100).toFixed(2)));
         }
-        
+
         packConfig.onComplete && packConfig.onComplete({ firstUploadResult, totalSize: this.totalSize, totalZipNumber: totalNum });
 
         // reset
@@ -418,7 +431,7 @@ export class Package {
         const jszip = new JSZip();
         const imgFolder = jszip.folder("Textures") as JSZip; // 贴图文件夹
         const geometriesFolder = jszip.folder("Geometries") as JSZip; // 几何数据文件夹
-        let drawingFolder= jszip.folder("Drawing") as JSZip; // 图纸文件夹
+        let drawingFolder = jszip.folder("Drawing") as JSZip; // 图纸文件夹
 
         sourceData.forEach((item) => {
             if (item.texture) {
@@ -442,7 +455,7 @@ export class Package {
                         level: 7
                     }
                 });
-            }else if (item.drawing) {
+            } else if (item.drawing) {
                 drawingFolder.file(item.name, item.drawing, {
                     compression: "DEFLATE",//"STORE",//"DEFLATE
                     compressionOptions: {
@@ -552,7 +565,7 @@ export class Package {
      */
     public unpack(unpackConfig: IUnpackConfig) {
         unpackConfig.onProgress && unpackConfig.onProgress(0);
-        let totalZipNumber = 0,progress = 0;
+        let totalZipNumber = 0, progress = 0;
 
         this.prefix_url = unpackConfig.url.substring(0, unpackConfig.url.lastIndexOf("/"));
 
@@ -563,7 +576,7 @@ export class Package {
         const that = this;
         this.callFunNum = new Proxy({ value: 0 }, {
             set(target, p, value) {
-                if (target[p] < value){
+                if (target[p] < value) {
                     progress += (value - target[p]) / totalZipNumber * 100;
                     unpackConfig.onProgress && unpackConfig.onProgress(progress);
                 }
@@ -600,9 +613,9 @@ export class Package {
         // map 存储 json 解析完成后执行的 function; key 为 uuid
         const funcMap = new Map<string, Function>();
 
-        const loadScene = (sceneJson:ISceneJson) => {
-            window.editor.fromJSON(sceneJson).then(async (fromJSONResult:IFromJSONResult) => {
-                unpackConfig.onSceneLoad && unpackConfig.onSceneLoad(sceneJson,fromJSONResult);
+        const loadScene = (sceneJson: ISceneJson, configJson: IConfigJson) => {
+            window.editor.fromJSON(sceneJson).then(async (fromJSONResult: IFromJSONResult) => {
+                unpackConfig.onSceneLoad && unpackConfig.onSceneLoad(sceneJson, configJson, fromJSONResult);
 
                 // 还原控制器中心
                 if (sceneJson.controls?.target) {
@@ -610,9 +623,33 @@ export class Package {
                 }
 
                 // 防止项目只有一个包的情况造成不触发proxy set
-                if(this.callFunNum.value === 0){
+                if (this.callFunNum.value === 0) {
                     this.callFunNum.value = 0;
                     unpackConfig.onProgress && unpackConfig.onProgress(100);
+                }
+
+                // 还原项目配置
+                if (configJson) {
+                    configJson.xr && (projectConfigStore.xr = configJson.xr);
+
+                    if (configJson.renderer) {
+                        const notChange = Object.keys(configJson.renderer).every((key) => {
+                            return configJson.renderer[key] === projectConfigStore.renderer[key];
+                        });
+
+                        Object.keys(configJson.renderer).forEach((key) => {
+                            projectConfigStore.renderer[key] = configJson.renderer[key];
+                        });
+
+                        if (!notChange) {
+                            useDispatchSignal("rendererConfigUpdate");
+                        }
+                    }
+
+                    configJson.effect && Object.keys(configJson.effect).forEach((key) => {
+                        projectConfigStore.effect[key] = configJson.effect[key];
+                        window.viewer.modules.effect.handlePassConfigChange(key, configJson.effect[key]);
+                    });
                 }
 
                 // 添加indexDB表存储zip包
@@ -626,13 +663,13 @@ export class Package {
         }
 
         const networkGet = () => {
-            // oss 下载场景包
+            // 下载场景包
             fetch(unpackConfig.url)
                 .then(zipRes => zipRes.blob())
                 .then(async (file) => {
                     unpackConfig.onProgress && unpackConfig.onProgress(1);
 
-                    let sceneJson;
+                    let sceneJson: ISceneJson, configJson: IConfigJson;
 
                     // 开始解压首包
                     const zip = new JSZip();
@@ -663,6 +700,9 @@ export class Package {
                                 const content = await res.file(fileName)?.async('string') as string;
                                 //得到scene.json文件的内容
                                 sceneJson = JSON.parse(content);
+                            } else if (fileName === "config.json") { // 项目配置json
+                                const content = await res.file(fileName)?.async('string') as string;
+                                configJson = JSON.parse(content);
                             } else if (fileName.substring(0, 9) === "Textures/") {
                                 /**
                                  * 贴图
@@ -700,7 +740,7 @@ export class Package {
                                 if (res.files[key].name === "Drawing/drawingMark.txt") {
                                     const content = await res.file(res.files[key].name)?.async('string') as string;
                                     drawingInfo.markList = unzip(content)
-                                } else if(res.files[key].name === "Drawing/drawingImgInfo.json"){
+                                } else if (res.files[key].name === "Drawing/drawingImgInfo.json") {
                                     drawingInfo.imgInfo = JSON.parse(await res.file(res.files[key].name)?.async('string') as string);
                                 } else {
                                     drawingInfo.imgSrc = await res.file(res.files[key].name)?.async('string') as string;
@@ -744,7 +784,7 @@ export class Package {
                     })
                     sceneJson.scene.object.children = newChildren;
 
-                    loadScene(sceneJson);
+                    loadScene(sceneJson, configJson);
 
                     sceneJson.scene.groupChildren = [...funcMap.keys()];
 
@@ -839,16 +879,16 @@ export class Package {
         const parse = (json) => {
             if (check(json.object, json)) {
                 this.loader.parse(json, (group) => {
-                    const bones:Bone[] = [];
-                    group.getObjectsByProperty("type","Bone",bones);
-                    if(bones.length > 0){
+                    const bones: Bone[] = [];
+                    group.getObjectsByProperty("type", "Bone", bones);
+                    if (bones.length > 0) {
                         this.skeletonClass.addBones(bones);
                     }
 
                     // 如果存在Skeleton（骨架），须存下来后面替换回原骨骼。
                     // 因为loader.parse时如果对应骨骼（Bone）还未加载，会生成新的空骨骼替代，
-                    if(json.skeletons){
-                        this.skeletonClass.handleSkeletons(json.skeletons,group);
+                    if (json.skeletons) {
+                        this.skeletonClass.handleSkeletons(json.skeletons, group);
                     }
 
                     group.uuid = uuid;

@@ -25,16 +25,66 @@ declare interface ISceneFetchData {
     updateTime?:string,
 }
 
+// 项目配置
+declare interface IConfigJson {
+    xr: boolean,
+    renderer: {
+        antialias: boolean,
+        shadows: boolean,
+        shadowType: import("three").ShadowMapType,
+        toneMapping: import("three").ToneMapping,
+        toneMappingExposure: number
+    },
+    effect: {
+        enabled: boolean,
+        Outline: {
+            enabled: boolean,
+            edgeStrength: number,
+            edgeGlow: number,
+            edgeThickness: number,
+            pulsePeriod: number,
+            usePatternTexture: boolean,
+            visibleEdgeColor: number | string,
+            hiddenEdgeColor: number | string,
+        },
+        FXAA: {
+            enabled: boolean,
+        },
+        UnrealBloom: {
+            enabled: boolean,
+            strength: number,
+            radius: number,
+            threshold: number,
+        },
+        Bokeh: {
+            enabled: boolean,
+            focus: number,
+            aperture: number,
+            maxblur: number,
+        },
+        Pixelate?: {
+            enabled: boolean,
+            pixelSize: number,
+            normalEdgeStrength: number,
+            depthEdgeStrength: number,
+        },
+        Halftone: {
+            enabled: boolean,
+            shape: number,
+            radius: number,
+            rotateR: number,
+            rotateG: number,
+            rotateB: number,
+            scatter: number,
+            blending: number,
+            blendingMode: number,
+            greyscale: boolean,
+        }
+    }
+}
+
 declare interface ISceneJson {
     metadata:{},
-    "project": {
-        "shadows": boolean,
-        "shadowType": import("three").ShadowMapType,
-        "xr": boolean,
-        "physicallyCorrectLights": boolean,
-        "toneMapping": import("three").ToneMapping,
-        "toneMappingExposure": number
-    },
     "camera": {
         "metadata": {
             "version": number,

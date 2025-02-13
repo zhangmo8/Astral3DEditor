@@ -2,6 +2,7 @@
 import {reactive,toRaw } from "vue";
 import {t} from "@/language";
 import {useDispatchSignal} from "@/hooks/useSignal";
+import {useProjectConfig} from "@/store/modules/projectConfig";
 
 withDefaults(defineProps<{
   effectEnabled:boolean
@@ -9,13 +10,10 @@ withDefaults(defineProps<{
   effectEnabled:false
 })
 
-// 抗锯齿配置
-const fxaa = reactive(window.editor.config.getEffectItem('FXAA'));
+const projectConfigStore = useProjectConfig();
 
 function handleFXAAConfigChange(){
-  const raw = toRaw(fxaa);
-  window.editor.config.setEffectItem("FXAA",raw);
-  useDispatchSignal("effectPassConfigChange","FXAA",raw);
+  useDispatchSignal("effectPassConfigChange","FXAA",toRaw(projectConfigStore.effect.FXAA));
 }
 </script>
 
@@ -23,7 +21,7 @@ function handleFXAAConfigChange(){
   <div class="pass-config-item">
     <span>{{ t(`other.Enable`) }}</span>
     <div>
-      <n-checkbox size="small" v-model:checked="fxaa.enabled" :disabled="!effectEnabled" @update:checked="handleFXAAConfigChange"/>
+      <n-checkbox size="small" v-model:checked="projectConfigStore.effect.FXAA.enabled" :disabled="!effectEnabled" @update:checked="handleFXAAConfigChange"/>
     </div>
   </div>
 </template>

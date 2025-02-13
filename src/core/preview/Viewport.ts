@@ -7,36 +7,32 @@
 import * as THREE from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
-import WebGPURenderer from "three/examples/jsm/renderers/webgpu/WebGPURenderer";
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
-import {XRButton} from "three/examples/jsm/webxr/XRButton";
-import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer.js";
-import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass.js";
-import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass.js';
-import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js';
-// 伽马校正后处理Shader
-import {GammaCorrectionShader} from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
-import {useAddSignal, useDispatchSignal} from "@/hooks/useSignal";
-import {XR} from "@/core/Viewport.XR";
+// import WebGPURenderer from "three/examples/jsm/renderers/webgpu/WebGPURenderer";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { XRButton } from "three/examples/jsm/webxr/XRButton";
+import { useAddSignal, useDispatchSignal } from "@/hooks/useSignal";
+import { XR } from "@/core/Viewport.XR";
 import ViewCube from "@/core/Viewport.Cube";
-import {Package} from "@/core/loader/Package";
-import {TweenManger} from "@/core/utils/TweenManager";
-import {ShaderMaterialManager} from "@/core/shaderMaterial/ShaderMaterialManager";
+import { Package } from "@/core/loader/Package";
+import { TweenManger } from "@/core/utils/TweenManager";
+import { ShaderMaterialManager } from "@/core/shaderMaterial/ShaderMaterialManager";
 import Helper from "@/core/script/Helper";
-import {ViewportSignals} from "@/core/preview/Viewport.Signals";
-import {ViewportOperation} from "@/core/preview/Viewport.Operation";
-import {getMousePosition} from "@/utils/common/scenes";
+import { ViewportSignals } from "@/core/preview/Viewport.Signals";
+import { ViewportOperation } from "@/core/preview/Viewport.Operation";
+import { getMousePosition } from "@/utils/common/scenes";
 import FlyTo from "@/core/utils/FlyTo";
-import {ClippedEdgesBox} from "@/core/utils/ClippedEdgesBox";
+import { ClippedEdgesBox } from "@/core/utils/ClippedEdgesBox";
 import EsDragControls from "@/core/controls/EsDragControls";
-import Measure, {MeasureMode} from "@/core/utils/Measure";
-import {MiniMap} from "@/core/utils/MiniMap";
+import Measure, { MeasureMode } from "@/core/utils/Measure";
+import { MiniMap } from "@/core/utils/MiniMap";
 import Roaming from "@/core/utils/Roaming";
+import { useProjectConfigStoreWithOut } from "@/store/modules/projectConfig";
+import { ViewportEffect } from "@/core/Viewport.Effect";
 
 const onDownPosition = new THREE.Vector2();
 const onUpPosition = new THREE.Vector2();
 
-let sceneResizeFn, onKeyDownFn, onKeyUpFn, onPointerDownFn, onPointerUpFn, onPointerMoveFn, animateFn;
+let onKeyDownFn, onKeyUpFn, onPointerDownFn, onPointerUpFn, onPointerMoveFn, animateFn;
 let events = {
     init: [],
     start: [],
@@ -53,6 +49,8 @@ let events = {
     onPointermove: [],
 };
 
+const projectConfigStore = useProjectConfigStoreWithOut();
+
 export class Viewport {
     private container: HTMLDivElement;
     private scene: THREE.Scene;
@@ -60,30 +58,31 @@ export class Viewport {
     camera: THREE.PerspectiveCamera;
 
     renderer: THREE.WebGLRenderer;
-    composer: EffectComposer;
-    outlinePass: OutlinePass;
 
     css2DRenderer: CSS2DRenderer = new CSS2DRenderer();
 
     clock: THREE.Clock = new THREE.Clock();
     private readonly xrButton: HTMLElement;
+    private box = new THREE.Box3();
+    private selectionBox: THREE.Box3Helper;
     private raycaster: THREE.Raycaster;
 
     modules: {
-        xr:XR,
-        controls:OrbitControls,
-        dragControl:EsDragControls,
-        viewCube:ViewCube,
-        package:Package,
-        tweenManager:TweenManger,
-        shaderMaterialManager:ShaderMaterialManager,
-        operation:ViewportOperation,
-        fly:FlyTo,
-        registerSignal:ViewportSignals,
-        clippedEdges:ClippedEdgesBox,
-        measure:Measure,
-        miniMap:MiniMap,
-        roaming:Roaming
+        xr: XR,
+        controls: OrbitControls,
+        dragControl: EsDragControls,
+        effect: ViewportEffect,
+        viewCube: ViewCube,
+        package: Package,
+        tweenManager: TweenManger,
+        shaderMaterialManager: ShaderMaterialManager,
+        operation: ViewportOperation,
+        fly: FlyTo,
+        registerSignal: ViewportSignals,
+        clippedEdges: ClippedEdgesBox,
+        measure: Measure,
+        miniMap: MiniMap,
+        roaming: Roaming
     };
 
     // animations
@@ -99,11 +98,16 @@ export class Viewport {
         this.camera = window.editor.camera;
 
         this.renderer = this.initEngine();
-        const {composer, outlinePass} = this.initComposer();
-        this.composer = composer;
-        this.outlinePass = outlinePass;
 
         this.xrButton = XRButton.createButton(this.renderer);
+
+        //选中时的包围框
+        this.selectionBox = new THREE.Box3Helper(this.box);
+        (this.selectionBox.material as THREE.Material).depthTest = false;
+        (this.selectionBox.material as THREE.Material).transparent = true;
+        this.selectionBox.visible = false;
+        // @ts-ignore
+        this.sceneHelpers.add(this.selectionBox);
 
         // 拾取对象
         this.raycaster = new THREE.Raycaster();
@@ -118,7 +122,7 @@ export class Viewport {
     }
 
     initEngine() {
-        let renderer: THREE.WebGLRenderer | WebGPURenderer;
+        let renderer: THREE.WebGLRenderer;
         // if (WebGPU.isAvailable()) {
         //     console.log("使用WebGPU渲染器");
         //     renderer = new WebGPURenderer({antialias: true});
@@ -126,7 +130,7 @@ export class Viewport {
         //     renderer.toneMappingExposure = 1;
         // } else {
         renderer = new THREE.WebGLRenderer({
-            antialias: true,
+            antialias: projectConfigStore.renderer.antialias,
             alpha: true,
             preserveDrawingBuffer: false,
             powerPreference: "high-performance",
@@ -139,14 +143,15 @@ export class Viewport {
         renderer.autoClear = false;
         renderer.setClearColor(0x272727, 0);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
-        // renderer.shadowMap.enabled = true; // 允许在场景中使用阴影贴图
-        // renderer.shadowMap.type = THREE.BasicShadowMap; // 阴影贴图类型
-        renderer.toneMapping = THREE.ACESFilmicToneMapping; // 色调映射
+        renderer.shadowMap.enabled = projectConfigStore.renderer.shadows; // 允许在场景中使用阴影贴图
+        renderer.shadowMap.type = projectConfigStore.renderer.shadowType; // 阴影贴图类型
+        renderer.toneMapping = projectConfigStore.renderer.toneMapping; // 色调映射
+        renderer.toneMappingExposure = projectConfigStore.renderer.toneMappingExposure;
 
         renderer.setViewport(0, 0, this.container.offsetWidth, this.container.offsetHeight);
         renderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
         renderer.setPixelRatio(Math.max(Math.ceil(window.devicePixelRatio), 1));
-        renderer.xr.enabled = true;
+        renderer.xr.enabled = projectConfigStore.xr;
         renderer.domElement.setAttribute("id", "es-3d-preview");
         renderer.domElement.style.touchAction = "none";
         this.container.appendChild(renderer.domElement);
@@ -156,44 +161,17 @@ export class Viewport {
         this.css2DRenderer.domElement.style.position = 'absolute';
         this.css2DRenderer.domElement.style.top = '0px';
         this.css2DRenderer.domElement.style.pointerEvents = 'none';
-        this.container.appendChild(this.css2DRenderer.domElement);
+
+        // 防止重复添加
+        if (this.css2DRenderer.domElement.parentNode !== this.container) {
+            this.container.appendChild(this.css2DRenderer.domElement);
+        }
 
         return renderer;
     }
 
-    initComposer(){
-        const pixelRatio = this.renderer.getPixelRatio();
-
-        // 创建后处理对象EffectComposer，WebGL渲染器作为参数
-        let composer = new EffectComposer(this.renderer);
-        composer.setPixelRatio(pixelRatio)
-        composer.setSize(this.container.offsetWidth, this.container.offsetHeight);
-
-        let ssaaRenderPass = new SSAARenderPass(this.scene, this.camera);
-        ssaaRenderPass.unbiased = false;
-        ssaaRenderPass.sampleLevel = 2;
-        composer.addPass(ssaaRenderPass);
-
-        const outlinePass = new OutlinePass(new THREE.Vector2(this.container.offsetWidth, this.container.offsetHeight), this.scene, this.camera)
-        outlinePass.visibleEdgeColor = new THREE.Color(1, 0.2, 0) // 可见边缘的颜色
-        //outlinePass.hiddenEdgeColor = new THREE.Color(0.098, 0.023, 0.007) // 不可见边缘的颜色
-        outlinePass.edgeGlow = Number(1.0); // 发光强度
-        outlinePass.usePatternTexture = false; // 禁用纹理以获得纯线的效果
-        outlinePass.edgeThickness = Number(1.0); // 边缘浓度
-        outlinePass.edgeStrength = Number(5.0);  // 边缘的强度，值越高边框范围越大
-        outlinePass.pulsePeriod = 0; // 闪烁频率，值越大频率越低
-        outlinePass.selectedObjects = [];
-        composer.addPass(outlinePass);
-
-        // 创建伽马校正通道. 解决gltf模型后处理时，颜色偏差的问题
-        const gammaPass = new ShaderPass(GammaCorrectionShader);
-        composer.addPass(gammaPass);
-
-        return {composer, outlinePass};
-    }
-
     protected initModules() {
-        let modules:any = {};
+        let modules: any = {};
 
         modules.xr = new XR(modules.transformControls);
 
@@ -206,17 +184,36 @@ export class Viewport {
                     this.render();
                 })
             } else {
-                if(!this.modules.roaming.person) return;
+                if (!this.modules.roaming.person) return;
                 // 漫游模式下,玩家跟随旋转
                 this.modules.roaming.person.rotation.y = this.modules.controls.getAzimuthalAngle() + Math.PI;
                 //this.modules["roaming"].player.quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), this.modules["orbit"].getAzimuthalAngle() + Math.PI);
             }
         });
+        // 添加两个方法，在Weather->Rain中用到
+        // 因为编辑器中controls使用的不是OrbitControls造成差异
+        modules.controls.getPosition = (v3: THREE.Vector3) => {
+            v3.copy(modules.controls.object.position);
+
+            return v3;
+        }
+        modules.controls.getTarget = (v3: THREE.Vector3) => {
+            v3.copy(modules.controls.target);
+
+            return v3;
+        }
+
+        // 后处理
+        modules.effect = new ViewportEffect(this);
+        // 初始化后处理
+        if (modules.effect.enabled) {
+            modules.effect.createComposer();
+        }
 
         // 注册拖拽组件
         modules.dragControl = new EsDragControls(this);
 
-        modules.viewCube = new ViewCube(this.camera,this.container,modules.controls);
+        modules.viewCube = new ViewCube(this.camera, this.container, modules.controls);
 
         modules.package = new Package();
 
@@ -224,7 +221,7 @@ export class Viewport {
         modules.tweenManager = new TweenManger();
 
         // 相机飞行
-        modules.fly = new FlyTo(this.camera,modules.controls);
+        modules.fly = new FlyTo(this.camera, modules.controls);
 
         modules.shaderMaterialManager = new ShaderMaterialManager();
 
@@ -241,22 +238,47 @@ export class Viewport {
         modules.measure = new Measure(this, MeasureMode.Distance);
 
         // 小地图
-        modules.miniMap = new MiniMap(this,{
-            mapSize:100,
-            mapRenderSize:350,
-            followTarget:this.camera,
-            isShow:false,
+        modules.miniMap = new MiniMap(this, {
+            mapSize: 100,
+            mapRenderSize: 350,
+            followTarget: this.camera,
+            isShow: false,
         });
 
         // 人物漫游
-        modules.roaming = new Roaming(this,modules.controls);
+        modules.roaming = new Roaming(this, modules.controls);
 
         return modules;
     }
 
-    initEvent(){
-        sceneResizeFn = this.sceneResize.bind(this);
-        useAddSignal("sceneResize", sceneResizeFn);
+    initEvent() {
+        useAddSignal("rendererConfigUpdate", () => {
+            // if(this.renderer){
+            //     this.renderer.setAnimationLoop(null);
+            //     this.renderer.dispose();
+            //
+            //     this.modules.controls.disconnect();
+            //     this.container.removeChild(this.renderer.domElement);
+            // }
+            //
+            // this.renderer = this.initEngine();
+            // // 初始化后处理
+            // if(this.modules.effect.enabled){
+            //     this.modules.effect.createComposer();
+            // }
+            //
+            // animateFn = this.animation.bind(this);
+            // this.renderer.setAnimationLoop(animateFn);
+            //
+            // // 控制器绑定
+            // this.modules.controls.domElement = this.renderer.domElement;
+            // this.modules.controls.connect();
+            //
+            // // 替换拖拽控制器dom
+            // this.modules.dragControl.domElement = this.renderer.domElement;
+            //
+            // this.render();
+        });
 
         onKeyDownFn = this.onKeyDown.bind(this);
         onKeyUpFn = this.onKeyUp.bind(this);
@@ -295,9 +317,9 @@ export class Viewport {
         let qb = new THREE.Quaternion().setFromEuler(new THREE.Euler().copy(initCamera.rotation)); // dst quaternion
         let qm = new THREE.Quaternion();
 
-        let o = {t: 0};
+        let o = { t: 0 };
         const cameraRotation = new TWEEN.Tween(o);
-        cameraRotation.to({t: 1}, runTime);
+        cameraRotation.to({ t: 1 }, runTime);
 
         cameraToTarget.onComplete(() => {
             useDispatchSignal("tweenRemove", cameraToTarget);
@@ -350,39 +372,23 @@ export class Viewport {
         this.flyToCamera(targetCamera, runTime, done);
     }
 
-    sceneResize() {
-        if (this.camera) {
-            this.camera.aspect = this.container.offsetWidth / this.container.offsetHeight;
-            this.camera.updateProjectionMatrix();
-        }
+    // 20250108：方法好似多余，上面通过projectConfigStore设置了，运行三个月无误后删除
+    // load(json:IConfigJson) {
+    //     if(!json) return;
 
-        this.renderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
-        this.composer.setSize(this.container.offsetWidth, this.container.offsetHeight);
+    //     if (json.xr !== undefined) this.renderer.xr.enabled = json.xr;
+    //     if (json.renderer.shadows !== undefined) this.renderer.shadowMap.enabled = json.renderer.shadows;
+    //     if (json.renderer.shadowType !== undefined) this.renderer.shadowMap.type = json.renderer.shadowType;
+    //     if (json.renderer.toneMapping !== undefined) this.renderer.toneMapping = json.renderer.toneMapping;
+    //     if (json.renderer.toneMappingExposure !== undefined) this.renderer.toneMappingExposure = json.renderer.toneMappingExposure;
 
-        if (this.css2DRenderer) {
-            this.css2DRenderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
-        }
-
-        this.render();
-    };
-
-    load(json:ISceneJson) {
-        console.log(json);
-        const project = json.project;
-
-        if (project.xr !== undefined) this.renderer.xr.enabled = project.xr;
-        if (project.shadows !== undefined) this.renderer.shadowMap.enabled = project.shadows;
-        if (project.shadowType !== undefined) this.renderer.shadowMap.type = project.shadowType;
-        if (project.toneMapping !== undefined) this.renderer.toneMapping = project.toneMapping;
-        if (project.toneMappingExposure !== undefined) this.renderer.toneMappingExposure = project.toneMappingExposure;
-
-        this.sceneResize();
-    }
+    //     useDispatchSignal("sceneResize");
+    // }
 
     /**
      * 场景加载完成后调用
      */
-    setup(){
+    setup() {
         this.handleScripts()
 
         this.dispatch(events.init, arguments);
@@ -414,7 +420,7 @@ export class Viewport {
         return this.raycaster.intersectObjects(objects, false);
     }
 
-    handleScripts(){
+    handleScripts() {
         // 注册 Helper
         const helper = new Helper(this.scene as THREE.Scene);
 
@@ -472,7 +478,7 @@ export class Viewport {
         }
     }
 
-    handleClick(){
+    handleClick() {
         if (onDownPosition.distanceTo(onUpPosition) === 0) {
             const intersects = this.getIntersects(onUpPosition);
             useDispatchSignal("intersectionsDetected", intersects);
@@ -495,6 +501,13 @@ export class Viewport {
 
                 mixer.update(delta);
                 needsUpdate = true;
+
+                if (window.editor.selected !== null) {
+                    // 避免某些蒙皮网格的帧延迟效应(e.g. Michelle.glb)
+                    window.editor.selected.updateWorldMatrix(false, true);
+                    //  选择框应反映当前动画状态
+                    this.selectionBox.box.setFromObject(window.editor.selected, true);
+                }
             }
         }
 
@@ -502,7 +515,10 @@ export class Viewport {
         this.modules.viewCube.update();
         this.modules.miniMap.update();
         this.modules.shaderMaterialManager.update();
-        if(this.modules.shaderMaterialManager.needRender){
+        if (this.modules.shaderMaterialManager.needRender) {
+            needsUpdate = true;
+        }
+        if (this.modules.dragControl.isDragging) {
             needsUpdate = true;
         }
 
@@ -514,24 +530,24 @@ export class Viewport {
             needsUpdate = true;
         }
 
-        if(needsUpdate) {
+        if (needsUpdate) {
             this.dispatch(events.beforeUpdate, arguments);
             this.render(delta);
         }
     }
 
     render(delta?: number) {
-        if(!delta){
+        if (!delta) {
             delta = Math.min(this.clock.getDelta(), 0.05);
         }
 
         try {
-            this.dispatch(events.update, {time: this.clock.elapsedTime, delta: delta});
+            this.dispatch(events.update, { time: this.clock.elapsedTime, delta: delta });
         } catch (e: any) {
             console.error((e.message || e), (e.stack || ''));
         }
 
-        this.renderer.autoClear = false;
+        // this.renderer.autoClear = false;
 
         if (this.modules.roaming?.isRoaming) {
             const roamingDelta = delta / 3;
@@ -540,13 +556,19 @@ export class Viewport {
             }
         }
 
-        this.composer.render(delta);
+        this.renderer.clearDepth();
+
+        if (this.modules.effect.enabled) {
+            this.modules.effect.render(delta);
+        } else {
+            this.renderer.render(this.scene, this.camera);
+        }
 
         this.renderer.render(this.sceneHelpers, this.camera);
         // css2d 在sceneHelpers内
         this.css2DRenderer.render(this.sceneHelpers, this.camera);
 
-        this.renderer.autoClear = true;
+        // this.renderer.autoClear = true;
 
         this.dispatch(events.afterUpdate, arguments);
     }
@@ -554,7 +576,7 @@ export class Viewport {
     /**
      * 重置场景,会从window.editor.reset()中调用
      */
-    reset(){
+    reset() {
         // 清空 css2DRenderer
         this.css2DRenderer.domElement.innerHTML = "";
     }
@@ -562,7 +584,6 @@ export class Viewport {
     dispose() {
         this.dispatch(events.beforeDestroy, arguments);
 
-        this.composer.dispose();
         this.renderer.dispose();
 
         this.container.removeChild(this.renderer.domElement);
@@ -572,7 +593,6 @@ export class Viewport {
             this.modules[key].dispose && this.modules[key].dispose();
         })
 
-        sceneResizeFn = undefined;
         onKeyDownFn = undefined;
         onKeyUpFn = undefined;
         onPointerDownFn = undefined;
@@ -605,7 +625,7 @@ export class Viewport {
         // 右键不触发点击事件
         if (event.button === 2) return;
         // 正在执行测量时不触发点击事件(必须写在这，不记录点位数据，写在handleClick中的话，由于PointerUp事件触发顺序不同，测量角度时会触发点击事件)
-        if(!this.modules.measure.isCompleted) return;
+        if (!this.modules.measure.isCompleted) return;
 
         event.preventDefault();
         const array = getMousePosition(this.container, event.clientX, event.clientY);
@@ -618,7 +638,7 @@ export class Viewport {
         // 右键不触发点击事件
         if (event.button === 2) return;
         // 正在执行测量时不触发点击事件
-        if(!this.modules.measure.isCompleted) return;
+        if (!this.modules.measure.isCompleted) return;
 
         const array = getMousePosition(this.container, event.clientX, event.clientY);
         onUpPosition.fromArray(array);

@@ -5,61 +5,63 @@
  * @description 后处理
  */
 import * as THREE from "three";
-import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
-import {Pass} from "three/examples/jsm/postprocessing/Pass";
-import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass";
-import {ShaderPass} from "three/examples/jsm/postprocessing/ShaderPass";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { Pass } from "three/examples/jsm/postprocessing/Pass";
+import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import {GammaCorrectionShader} from "three/examples/jsm/shaders/GammaCorrectionShader";
+import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader";
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
 import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass.js';
 import { HalftonePass } from 'three/examples/jsm/postprocessing/HalftonePass.js';
 // import {OutputPass} from "three/examples/jsm/postprocessing/OutputPass.js";
 
-import {Viewport} from "@/core/Viewport";
-import {useAddSignal} from "@/hooks/useSignal";
+import { useAddSignal } from "@/hooks/useSignal";
+import { useProjectConfigStoreWithOut } from "@/store/modules/projectConfig";
 
-let _passConfigChangeFn:any = null;
-export class ViewportEffect{
-    private viewport:Viewport;
+const projectConfigStore = useProjectConfigStoreWithOut();
+
+let _passConfigChangeFn: any = null;
+export class ViewportEffect {
+    private viewport: any;
 
     composer: EffectComposer | undefined;
     outlinePass: OutlinePass | undefined;
 
     // 其他可动态配置的通道
-    static PassMap = new Map<string,Pass>();
+    static PassMap = new Map<string, Pass>();
 
-    constructor(viewport:Viewport) {
+    constructor(viewport: any) {
         this.viewport = viewport;
 
         _passConfigChangeFn = this.handlePassConfigChange.bind(this);
-        useAddSignal("effectPassConfigChange",_passConfigChangeFn)
+        useAddSignal("effectPassConfigChange", _passConfigChangeFn)
     }
 
-    get enabled(){
-        // if(!this.composer && window.editor.config.getEffectItem('enabled')){
+    get enabled() {
+        // if(!this.composer && projectConfigStore.getEffectItem('enabled')){
         //     this.createComposer();
         // }
 
-        return window.editor.config.getEffectItem('enabled');
+        return projectConfigStore.getEffectItem('enabled');
     }
 
-    createComposer(){
-        const {composer, outlinePass} = this.initComposer();
+    createComposer() {
+        const { composer, outlinePass } = this.initComposer();
         this.composer = composer as EffectComposer;
         this.outlinePass = outlinePass;
 
         // 加入默认打开的通道
-        const effectConfig = window.editor.config.getKey('effect');
-        if(effectConfig){
+        const effectConfig = projectConfigStore.effect;
+        if (effectConfig) {
             Object.keys(effectConfig).forEach(key => {
-                if(key === "enabled" || key === "Outline") return;
+                if (key === "enabled" || key === "Outline") return;
 
                 // 判断是否存在 enabled 属性
-                if(effectConfig[key].hasOwnProperty('enabled') && effectConfig[key].enabled === true){
-                    if(!this[key] || !(this[key] instanceof Pass)) return;
+                if (effectConfig[key].hasOwnProperty('enabled') && effectConfig[key].enabled === true) {
+                    if (!this[key] || !(this[key] instanceof Pass)) return;
 
                     this.composer?.addPass(this[key]);
                 }
@@ -67,8 +69,8 @@ export class ViewportEffect{
         }
     }
 
-    protected initComposer(){
-        if(!this.viewport.renderer) return {};
+    protected initComposer() {
+        if (!this.viewport.renderer) return {};
 
         const pixelRatio = this.viewport.renderer.getPixelRatio();
 
@@ -90,7 +92,7 @@ export class ViewportEffect{
         renderPass.clearDepth = true;
         composer.addPass(renderPass);
 
-        const outlineConfig = window.editor.config.getEffectItem('Outline');
+        const outlineConfig = projectConfigStore.getEffectItem('Outline');
         const outlinePass = new OutlinePass(new THREE.Vector2(this.viewport.container.offsetWidth, this.viewport.container.offsetHeight), this.viewport.scene, this.viewport.camera)
         outlinePass.visibleEdgeColor = new THREE.Color(outlineConfig.visibleEdgeColor || "#ffee00");
         outlinePass.hiddenEdgeColor = new THREE.Color(outlineConfig.hiddenEdgeColor || "#ff6a00");
@@ -109,29 +111,29 @@ export class ViewportEffect{
         // const outputPass = new OutputPass();
         // composer.addPass(outputPass);
 
-        return {composer, outlinePass};
+        return { composer, outlinePass };
     }
 
     /**
      * FXAA 抗锯齿通道
      */
-    get FXAA(){
-        if(ViewportEffect.PassMap.has("FXAA")) {
+    get FXAA() {
+        if (ViewportEffect.PassMap.has("FXAA")) {
             return ViewportEffect.PassMap.get("FXAA");
         }
 
-        if(!this.viewport.renderer) return null;
+        if (!this.viewport.renderer) return null;
 
-        const options = window.editor.config.getEffectItem("FXAA");
+        const options = projectConfigStore.getEffectItem("FXAA");
 
         const fxaaPass = new ShaderPass(FXAAShader);
         fxaaPass.clear = true;
         const pixelRatio = this.viewport.renderer.getPixelRatio();
-        fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / (this.viewport.container.offsetWidth * pixelRatio);
-        fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / (this.viewport.container.offsetHeight * pixelRatio);
+        fxaaPass.material.uniforms['resolution'].value.x = 1 / (this.viewport.container.offsetWidth * pixelRatio);
+        fxaaPass.material.uniforms['resolution'].value.y = 1 / (this.viewport.container.offsetHeight * pixelRatio);
         fxaaPass.enabled = options.enabled || false;
 
-        ViewportEffect.PassMap.set("FXAA",fxaaPass);
+        ViewportEffect.PassMap.set("FXAA", fxaaPass);
 
         return fxaaPass;
     }
@@ -139,19 +141,19 @@ export class ViewportEffect{
     /**
      * UnrealBloom 仿UE辉光
      */
-    get UnrealBloom(){
-        if(ViewportEffect.PassMap.has("UnrealBloom")) {
+    get UnrealBloom() {
+        if (ViewportEffect.PassMap.has("UnrealBloom")) {
             return ViewportEffect.PassMap.get("UnrealBloom");
         }
 
-        const options = window.editor.config.getEffectItem("UnrealBloom");
+        const options = projectConfigStore.getEffectItem("UnrealBloom");
 
         const bloomPass = new UnrealBloomPass(new THREE.Vector2(this.viewport.container.offsetWidth, this.viewport.container.offsetWidth), 1, 0, 0);
         bloomPass.threshold = options.threshold || 0;
         bloomPass.strength = options.strength === undefined ? 1 : options.strength;
         bloomPass.radius = options.radius || 0;
 
-        ViewportEffect.PassMap.set("UnrealBloom",bloomPass);
+        ViewportEffect.PassMap.set("UnrealBloom", bloomPass);
 
         return bloomPass;
     }
@@ -159,12 +161,12 @@ export class ViewportEffect{
     /**
      * Bokeh 变焦,背景虚化（焦外成像）
      */
-    get Bokeh(){
-        if(ViewportEffect.PassMap.has("Bokeh")) {
+    get Bokeh() {
+        if (ViewportEffect.PassMap.has("Bokeh")) {
             return ViewportEffect.PassMap.get("Bokeh");
         }
 
-        const options = window.editor.config.getEffectItem("Bokeh");
+        const options = projectConfigStore.getEffectItem("Bokeh");
 
         const bokehPass = new BokehPass(this.viewport.scene, window.editor.viewportCamera, {
             focus: options.focus,
@@ -172,7 +174,7 @@ export class ViewportEffect{
             maxblur: options.maxblur
         });
 
-        ViewportEffect.PassMap.set("Bokeh",bokehPass);
+        ViewportEffect.PassMap.set("Bokeh", bokehPass);
 
         return bokehPass;
     }
@@ -181,19 +183,19 @@ export class ViewportEffect{
      * Pixelate 像素风
      * TODO: 暂未启用，渲染错误
      */
-    get Pixelate(){
-        if(ViewportEffect.PassMap.has("Pixelate")) {
+    get Pixelate() {
+        if (ViewportEffect.PassMap.has("Pixelate")) {
             return ViewportEffect.PassMap.get("Pixelate");
         }
 
-        const options = window.editor.config.getEffectItem("Pixelate");
+        const options = projectConfigStore.getEffectItem("Pixelate");
 
-        const pixelatedPass = new RenderPixelatedPass(options.pixelSize || 6, this.viewport.scene, window.editor.viewportCamera,{
+        const pixelatedPass = new RenderPixelatedPass(options.pixelSize || 6, this.viewport.scene, window.editor.viewportCamera, {
             normalEdgeStrength: options.normalEdgeStrength,
             depthEdgeStrength: options.depthEdgeStrength
         });
 
-        ViewportEffect.PassMap.set("Pixelate",pixelatedPass);
+        ViewportEffect.PassMap.set("Pixelate", pixelatedPass);
 
         return pixelatedPass;
     }
@@ -201,16 +203,16 @@ export class ViewportEffect{
     /**
      * Halftone 半色调
      */
-    get Halftone(){
-        if(ViewportEffect.PassMap.has("Halftone")) {
+    get Halftone() {
+        if (ViewportEffect.PassMap.has("Halftone")) {
             return ViewportEffect.PassMap.get("Halftone");
         }
 
-        const options = window.editor.config.getEffectItem("Halftone");
+        const options = projectConfigStore.getEffectItem("Halftone");
 
         const halftonePass = new HalftonePass(this.viewport.container.offsetWidth, this.viewport.container.offsetWidth, options);
 
-        ViewportEffect.PassMap.set("Halftone",halftonePass);
+        ViewportEffect.PassMap.set("Halftone", halftonePass);
 
         return halftonePass;
     }
@@ -220,17 +222,17 @@ export class ViewportEffect{
      * @param name 通道名
      * @param config 新配置
      */
-    handlePassConfigChange(name:string,config){
+    handlePassConfigChange(name: string, config) {
         // 参数配置在uniforms的Pass
-        const uniformsConfigPass:string[] = ["Bokeh","Halftone"];
+        const uniformsConfigPass: string[] = ["Bokeh", "Halftone"];
 
-        if(name === "Outline"){
+        if (name === "Outline") {
             for (const key in config) {
-                (<OutlinePass>this.outlinePass)[key] = this.getPassConfigValue(key,config[key]);
+                (<OutlinePass>this.outlinePass)[key] = this.getPassConfigValue(key, config[key]);
             }
         } else {
-            if(!config.enabled) {
-                if(ViewportEffect.PassMap.has(name)){
+            if (!config.enabled) {
+                if (ViewportEffect.PassMap.has(name)) {
                     this.composer?.removePass(ViewportEffect.PassMap.get(name) as Pass)
                     ViewportEffect.PassMap.delete(name);
                 }
@@ -239,8 +241,8 @@ export class ViewportEffect{
                 return;
             }
 
-            if(!ViewportEffect.PassMap.has(name)){
-                if(!this[name] || !(this[name] instanceof Pass)) return;
+            if (!ViewportEffect.PassMap.has(name)) {
+                if (!this[name] || !(this[name] instanceof Pass)) return;
 
                 // get this[name]时创建的Pass会自动加入到ViewportEffect.PassMap
                 this.composer?.addPass(this[name]);
@@ -248,15 +250,15 @@ export class ViewportEffect{
                 this.viewport.render();
             }
 
-            if(uniformsConfigPass.includes(name)){
+            if (uniformsConfigPass.includes(name)) {
                 for (const key in config) {
-                    if(this[name].uniforms[key] === undefined) continue;
+                    if (this[name].uniforms[key] === undefined) continue;
 
-                    this[name].uniforms[key].value = this.getPassConfigValue(key,config[key]);
+                    this[name].uniforms[key].value = this.getPassConfigValue(key, config[key]);
                 }
-            }else{
+            } else {
                 for (const key in config) {
-                    this[name][key] = this.getPassConfigValue(key,config[key]);
+                    this[name][key] = this.getPassConfigValue(key, config[key]);
                 }
             }
         }
@@ -267,25 +269,25 @@ export class ViewportEffect{
     /**
      * 处理通道值
      */
-    getPassConfigValue(key:string,value:any){
-        if(["visibleEdgeColor","hiddenEdgeColor"].includes(key)){
+    getPassConfigValue(key: string, value: any) {
+        if (["visibleEdgeColor", "hiddenEdgeColor"].includes(key)) {
             return new THREE.Color(value);
         }
 
-        if(["rotateR","rotateG","rotateB"].includes(key)){
+        if (["rotateR", "rotateG", "rotateB"].includes(key)) {
             return value * (Math.PI / 180);
         }
 
         return value;
     }
 
-    render(deltaTime:number){
-        if(!this.enabled || !this.composer) return;
+    render(deltaTime: number) {
+        if (!this.enabled || !this.composer) return;
 
         this.composer.render(deltaTime);
     }
 
-    dispose(){
+    dispose() {
         _passConfigChangeFn = null;
     }
 }

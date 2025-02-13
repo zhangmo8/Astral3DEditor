@@ -2,6 +2,7 @@
 import {computed, reactive, toRaw} from "vue";
 import {t} from "@/language";
 import {useDispatchSignal} from "@/hooks/useSignal";
+import {useProjectConfig} from "@/store/modules/projectConfig";
 
 const props = withDefaults(defineProps<{
   effectEnabled:boolean
@@ -9,15 +10,12 @@ const props = withDefaults(defineProps<{
   effectEnabled:false
 })
 
-// 描边线配置
-const outline = reactive(window.editor.config.getEffectItem('Outline'));
+const projectConfigStore = useProjectConfig();
 
-const disabled = computed(() => !props.effectEnabled || !outline.enabled);
+const disabled = computed(() => !props.effectEnabled || !projectConfigStore.effect.Outline.enabled);
 
 function handleOutlineConfigChange(){
-  const raw = toRaw(outline);
-  window.editor.config.setEffectItem("Outline",raw);
-  useDispatchSignal("effectPassConfigChange","Outline",raw);
+  useDispatchSignal("effectPassConfigChange","Outline",toRaw(projectConfigStore.effect.Outline));
 }
 </script>
 
@@ -25,7 +23,7 @@ function handleOutlineConfigChange(){
   <div class="pass-config-item">
     <span>{{ t(`other.Enable`) }}</span>
     <div>
-      <n-checkbox size="small" v-model:checked="outline.enabled" :disabled="!effectEnabled" @update:checked="handleOutlineConfigChange"/>
+      <n-checkbox size="small" v-model:checked="projectConfigStore.effect.Outline.enabled" :disabled="!effectEnabled" @update:checked="handleOutlineConfigChange"/>
     </div>
   </div>
 
@@ -33,7 +31,7 @@ function handleOutlineConfigChange(){
   <div class="pass-config-item">
     <span>{{ t(`layout.sider.postProcessing.Edge Strength`) }}</span>
     <div>
-      <n-slider v-model:value="outline.edgeStrength" :step="0.01" :min="0.01" :max="10" :disabled="disabled" @update:value="handleOutlineConfigChange" />
+      <n-slider v-model:value="projectConfigStore.effect.Outline.edgeStrength" :step="0.01" :min="0.01" :max="10" :disabled="disabled" @update:value="handleOutlineConfigChange" />
     </div>
   </div>
 
@@ -41,7 +39,7 @@ function handleOutlineConfigChange(){
   <div class="pass-config-item">
     <span>{{ t(`layout.sider.postProcessing.Edge Glow`) }}</span>
     <div>
-      <n-slider v-model:value="outline.edgeGlow" :step="0.01" :min="0" :max="1" :disabled="disabled" @update:value="handleOutlineConfigChange" />
+      <n-slider v-model:value="projectConfigStore.effect.Outline.edgeGlow" :step="0.01" :min="0" :max="1" :disabled="disabled" @update:value="handleOutlineConfigChange" />
     </div>
   </div>
 
@@ -49,7 +47,7 @@ function handleOutlineConfigChange(){
   <div class="pass-config-item">
     <span>{{ t(`layout.sider.postProcessing.Edge Thickness`) }}</span>
     <div>
-      <n-slider v-model:value="outline.edgeThickness" :step="0.01" :min="1" :max="4" :disabled="disabled" @update:value="handleOutlineConfigChange" />
+      <n-slider v-model:value="projectConfigStore.effect.Outline.edgeThickness" :step="0.01" :min="1" :max="4" :disabled="disabled" @update:value="handleOutlineConfigChange" />
     </div>
   </div>
 
@@ -57,7 +55,7 @@ function handleOutlineConfigChange(){
   <!--      <div class="pass-config-item">-->
   <!--        <span>{{ t(`layout.sider.postProcessing.Pulse Period`) }}</span>-->
   <!--        <div>-->
-  <!--          <n-slider v-model:value="outline.pulsePeriod" :step="0.01" :min="0" :max="5" :disabled="disabled" @update:value="handleOutlineConfigChange" />-->
+  <!--          <n-slider v-model:value="projectConfigStore.effect.Outline.pulsePeriod" :step="0.01" :min="0" :max="5" :disabled="disabled" @update:value="handleOutlineConfigChange" />-->
   <!--        </div>-->
   <!--      </div>-->
 
@@ -65,7 +63,7 @@ function handleOutlineConfigChange(){
   <div class="pass-config-item">
     <span>{{ t(`layout.sider.postProcessing.Visible Edge`) }}</span>
     <div>
-      <n-color-picker :show-alpha="false" v-model:value="outline.visibleEdgeColor" :disabled="disabled" @update:value="handleOutlineConfigChange" />
+      <n-color-picker :show-alpha="false" v-model:value="projectConfigStore.effect.Outline.visibleEdgeColor" :disabled="disabled" @update:value="handleOutlineConfigChange" />
     </div>
   </div>
 
@@ -73,7 +71,7 @@ function handleOutlineConfigChange(){
   <div class="pass-config-item">
     <span>{{ t(`layout.sider.postProcessing.Hidden Edge`) }}</span>
     <div>
-      <n-color-picker :show-alpha="false" v-model:value="outline.hiddenEdgeColor" :disabled="disabled" @update:value="handleOutlineConfigChange" />
+      <n-color-picker :show-alpha="false" v-model:value="projectConfigStore.effect.Outline.hiddenEdgeColor" :disabled="disabled" @update:value="handleOutlineConfigChange" />
     </div>
   </div>
 </template>

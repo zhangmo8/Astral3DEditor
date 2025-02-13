@@ -38,6 +38,7 @@ const editorSignals: SignalRegister = {
 	spaceChanged: new Signal(),
 	rendererCreated: new Signal(),
 	rendererUpdated: new Signal(),
+    rendererConfigUpdate: new Signal(),
 	rendererDetectKTX2Support: new Signal(),
 
 	sceneBackgroundChanged: new Signal(),
