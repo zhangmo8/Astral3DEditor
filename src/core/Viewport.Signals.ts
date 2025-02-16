@@ -355,7 +355,13 @@ export class ViewportSignals {
      * @param object
      */
     objectFocused(object){
-        this.viewport.modules.controls.fitToBox(object,true);
+        const box3 = new THREE.Box3();
+        box3.setFromObject(object);
+
+        if(box3.isEmpty()){
+            box3.set(new THREE.Vector3(object.position.x-1, object.position.y-1, object.position.z-1), new THREE.Vector3(object.position.x+1, object.position.y+1, object.position.z+1));
+        }
+        this.viewport.modules.controls.fitToBox(box3,true);
     }
 
     /**
