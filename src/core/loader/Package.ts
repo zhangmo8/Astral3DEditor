@@ -4,8 +4,9 @@
  * @date 2024-07-31
  * @version 4.0.0
  */
-import { ObjectLoader, Mesh, Group, Bone } from "three";
 import JSZip from "jszip";
+import { ObjectLoader, Vector3, Mesh, Group, Bone } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { BASE64_TYPES, TYPED_ARRAYS } from "@/utils/common/constant";
 import { unzip, zip } from "@/utils/common/pako";
 import { fetchController } from "@/utils/service/fetchController";
@@ -618,7 +619,12 @@ export class Package {
 
                 // 还原控制器
                 if (sceneJson.controls?.state) {
-                    window.viewer.modules.controls.fromJSON(sceneJson.controls.state,true);
+                    // 预览页面下使用的仍然是OrbitControls，后续如果改成CameraControls，则将此判断移除
+                    if(window.viewer.modules.controls instanceof OrbitControls){
+                        window.viewer.modules.controls.target = new Vector3().fromArray(JSON.parse(sceneJson.controls.state).target);
+                    }else{
+                        window.viewer.modules.controls.fromJSON(sceneJson.controls.state,true);
+                    }
                 }
 
                 // 防止项目只有一个包的情况造成不触发proxy set
