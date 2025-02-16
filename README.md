@@ -22,7 +22,7 @@
 ***
 
 ## 交流
-<img src="https://upyun.astraljs.com/static/images/WeChatGroup.jpg" width="500px">
+<img src="https://upyun.astraljs.com/static/images/WeChatGroup.jpg?t=20250216" width="500px">
 
 点击[这里](https://upyun.astraljs.com/static/images/WeChatGroup.jpg)查看最新群邀请图片。
 
