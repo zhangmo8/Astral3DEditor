@@ -238,21 +238,21 @@ const handleUserDataClick = () => {
 </script>
 
 <template>
-  <div v-show="hasMaterial" >
+  <div v-show="hasMaterial">
     <SceneAllMaterials />
 
     <!-- Current material slot -->
     <div class="sider-scene-material-item" v-if="materialSlotIsShow">
       <span>{{ t("layout.sider.material.slot") }}</span>
       <div>
-        <n-select size="small" v-model:value="objectData.slot" :options="slotOptions" @update:value="updateSlot"/>
+        <n-select size="small" v-model:value="objectData.slot" :options="slotOptions" @update:value="updateSlot" />
       </div>
     </div>
     <!-- type -->
     <div class="sider-scene-material-item">
       <span>{{ t("layout.sider.object.type") }}</span>
       <div>
-        <n-select size="small" v-model:value="objectData.type" :options="typeOptions" @update:value="update"/>
+        <n-select size="small" v-model:value="objectData.type" :options="typeOptions" @update:value="update" />
       </div>
     </div>
     <!-- uuid -->
@@ -268,7 +268,7 @@ const handleUserDataClick = () => {
         <n-button size="small" quaternary circle type="primary" v-if="objectData.uuid" @click="newUUID">
           <template #icon>
             <n-icon size="16">
-              <ReloadCircleOutline/>
+              <ReloadCircleOutline />
             </n-icon>
           </template>
         </n-button>
@@ -278,156 +278,157 @@ const handleUserDataClick = () => {
     <div class="sider-scene-material-item">
       <span>{{ t("layout.sider.object.name") }}</span>
       <div>
-        <n-input v-model:value="objectData.name" type="text" size="small" @update:value="updateName"/>
+        <n-input v-model:value="objectData.name" type="text" size="small" @update:value="updateName" />
       </div>
     </div>
 
     <!-- program -->
-    <SidebarMaterialProgram property="vertexShader"/>
+    <SidebarMaterialProgram property="vertexShader" />
 
     <!-- color -->
-    <SidebarMaterialColorProperty property="color" name="Color"/>
+    <SidebarMaterialColorProperty property="color" name="Color" />
 
     <!-- specular -->
-    <SidebarMaterialColorProperty property="specular" name="Specular"/>
+    <SidebarMaterialColorProperty property="specular" name="Specular" />
 
     <!-- shininess -->
-    <SidebarMaterialNumberProperty property="shininess" name="Shininess"/>
+    <SidebarMaterialNumberProperty property="shininess" name="Shininess" />
 
     <!-- emissive -->
-    <SidebarMaterialColorProperty property="emissive" name="Emissive"/>
+    <SidebarMaterialColorProperty property="emissive" name="Emissive" />
 
     <!-- reflectivity -->
-    <SidebarMaterialNumberProperty property="reflectivity" name="Reflectivity"/>
+    <SidebarMaterialNumberProperty property="reflectivity" name="Reflectivity" :decimal="2" />
 
     <!-- roughness -->
-    <SidebarMaterialNumberProperty property="roughness" name="Roughness" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="roughness" name="Roughness" :decimal="2" :range="[0, 1]" />
 
     <!-- metalness -->
-    <SidebarMaterialNumberProperty property="metalness" name="Metalness" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="metalness" name="Metalness" :decimal="2" :range="[0, 1]" />
 
     <!-- clearcoat -->
-    <SidebarMaterialNumberProperty property="clearcoat" name="Clearcoat" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="clearcoat" name="Clearcoat" :decimal="2" :range="[0, 1]" />
 
     <!-- clearcoatRoughness -->
-    <SidebarMaterialNumberProperty property="clearcoatRoughness" name="Clearcoat Roughness" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="clearcoatRoughness" name="Clearcoat Roughness" :decimal="2"
+                                   :range="[0, 1]" />
 
     <!-- iridescence -->
-    <SidebarMaterialNumberProperty property="iridescence" name="Iridescence" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="iridescence" name="Iridescence" :decimal="2" :range="[0, 1]" />
 
     <!-- iridescenceIOR -->
-    <SidebarMaterialNumberProperty property="iridescenceIOR" name="Thin-Film IOR" :range="[1, 5]"/>
+    <SidebarMaterialNumberProperty property="iridescenceIOR" name="Thin-Film IOR" :decimal="2" :range="[1, 5]" />
 
     <!-- iridescenceThicknessMax -->
-    <SidebarMaterialRangeValueProperty property="iridescenceThicknessRange" name="Thin-Film Thickness"
-                                          :isMin="false" :range="[0, Infinity]" unit="nm" :step="10"/>
+    <SidebarMaterialRangeValueProperty property="iridescenceThicknessRange" name="Thin-Film Thickness" :isMin="false"
+                                       :range="[0, Infinity]" unit="nm" :step="10" />
 
     <!-- sheen -->
-    <SidebarMaterialNumberProperty property="sheen" name="Sheen" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="sheen" name="Sheen" :decimal="2" :range="[0, 1]" />
 
     <!-- sheenRoughness -->
-    <SidebarMaterialNumberProperty property="sheenRoughness" name="Sheen Roughness" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="sheenRoughness" name="Sheen Roughness" :decimal="2" :range="[0, 1]" />
 
     <!-- specular -->
-    <SidebarMaterialColorProperty property="sheenColor" name="Sheen Color"/>
+    <SidebarMaterialColorProperty property="sheenColor" name="Sheen Color" />
 
     <!-- transmission 透光 -->
-    <SidebarMaterialNumberProperty property="transmission" name="Transmission" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="transmission" name="Transmission" :decimal="2" :range="[0, 1]" />
 
     <!-- attenuation distance 衰减距离 -->
-    <SidebarMaterialNumberProperty property="attenuationDistance" name="Attenuation Distance"/>
+    <SidebarMaterialNumberProperty property="attenuationDistance" name="Attenuation Distance" />
 
     <!-- attenuation tint 衰减色 -->
-    <SidebarMaterialColorProperty property="attenuationColor" name="Attenuation Color"/>
+    <SidebarMaterialColorProperty property="attenuationColor" name="Attenuation Color" />
 
     <!-- thickness 厚度 -->
-    <SidebarMaterialNumberProperty property="thickness" name="Thickness"/>
+    <SidebarMaterialNumberProperty property="thickness" name="Thickness" />
 
     <!-- vertex colors 顶点颜色 -->
-    <SidebarMaterialBooleanProperty property="vertexColors" name="Vertex Colors"/>
+    <SidebarMaterialBooleanProperty property="vertexColors" name="Vertex Colors" />
 
     <!-- depth packing 深度包装 -->
     <SidebarMaterialConstantProperty property="depthPacking" name="Depth Packing"
-                                        :options="[{ label: 'Basic', value: [THREE.BasicDepthPacking] }, { label: 'RGBA', value: [THREE.RGBADepthPacking] }]"/>
+                                     :options="[{ label: 'Basic', value: [THREE.BasicDepthPacking] }, { label: 'RGBA', value: [THREE.RGBADepthPacking] }]" />
 
     <!-- map 贴图 -->
-    <SidebarMaterialMapProperty property="map" name="Map"/>
+    <SidebarMaterialMapProperty property="map" name="Map" />
 
     <!-- specular map 高光贴图 -->
-    <SidebarMaterialMapProperty property="specularMap" name="Specular Map"/>
+    <SidebarMaterialMapProperty property="specularMap" name="Specular Map" />
 
     <!-- emissive map 自发光贴图 -->
-    <SidebarMaterialMapProperty property="emissiveMap" name="Emissive Map"/>
+    <SidebarMaterialMapProperty property="emissiveMap" name="Emissive Map" />
 
     <!-- matcap map 材质捕获 -->
-    <SidebarMaterialMapProperty property="matcap" name="Matcap"/>
+    <SidebarMaterialMapProperty property="matcap" name="Matcap" />
 
     <!-- alpha map 透明贴图 -->
-    <SidebarMaterialMapProperty property="alphaMap" name="Alpha Map"/>
+    <SidebarMaterialMapProperty property="alphaMap" name="Alpha Map" />
 
     <!-- bump map 凹凸贴图 -->
-    <SidebarMaterialMapProperty property="bumpMap" name="Bump Map"/>
+    <SidebarMaterialMapProperty property="bumpMap" name="Bump Map" />
 
     <!-- normal map 法线贴图 -->
-    <SidebarMaterialMapProperty property="normalMap" name="Normal Map"/>
+    <SidebarMaterialMapProperty property="normalMap" name="Normal Map" />
 
     <!-- clearcoat normal map 清漆法线贴图 -->
-    <SidebarMaterialMapProperty property="clearcoatNormalMap" name="Clearcoat Normal Map"/>
+    <SidebarMaterialMapProperty property="clearcoatNormalMap" name="Clearcoat Normal Map" />
 
     <!-- displacement map 置换贴图 -->
-    <SidebarMaterialMapProperty property="displacementMap" name="Displace Map"/>
+    <SidebarMaterialMapProperty property="displacementMap" name="Displace Map" />
 
     <!-- roughness map 粗糙贴图 -->
-    <SidebarMaterialMapProperty property="roughnessMap" name="Rough Map"/>
+    <SidebarMaterialMapProperty property="roughnessMap" name="Rough Map" />
 
     <!-- metalness map 金属贴图 -->
-    <SidebarMaterialMapProperty property="metalnessMap" name="Metal Map"/>
+    <SidebarMaterialMapProperty property="metalnessMap" name="Metal Map" />
 
     <!-- iridescence map 彩虹色贴图 -->
-    <SidebarMaterialMapProperty property="iridescenceMap" name="Irid Map"/>
+    <SidebarMaterialMapProperty property="iridescenceMap" name="Irid Map" />
 
     <!-- sheen color map -->
-    <SidebarMaterialMapProperty property="sheenColorMap" name="Sheen Color Map"/>
+    <SidebarMaterialMapProperty property="sheenColorMap" name="Sheen Color Map" />
 
     <!-- sheen roughness map -->
-    <SidebarMaterialMapProperty property="sheenRoughnessMap" name="Sheen Rough. Map"/>
+    <SidebarMaterialMapProperty property="sheenRoughnessMap" name="Sheen Rough. Map" />
 
     <!-- iridescence thickness map 彩虹色厚度贴图 -->
-    <SidebarMaterialMapProperty property="iridescenceThicknessMap" name="Thin-Film Thickness Map"/>
+    <SidebarMaterialMapProperty property="iridescenceThicknessMap" name="Thin-Film Thickness Map" />
 
     <!-- env map 环境贴图 -->
-    <SidebarMaterialMapProperty property="envMap" name="Env Map"/>
+    <SidebarMaterialMapProperty property="envMap" name="Env Map" />
 
     <!-- light map 环境贴图 -->
-    <SidebarMaterialMapProperty property="lightMap" name="Light Map"/>
+    <SidebarMaterialMapProperty property="lightMap" name="Light Map" />
 
     <!-- ambient occlusion map 环境光遮蔽贴图 -->
-    <SidebarMaterialMapProperty property="aoMap" name="AO Map"/>
+    <SidebarMaterialMapProperty property="aoMap" name="AO Map" />
 
     <!-- gradient map 渐变贴图 -->
-    <SidebarMaterialMapProperty property="gradientMap" name="Gradient Map"/>
+    <SidebarMaterialMapProperty property="gradientMap" name="Gradient Map" />
 
     <!-- transmission map 透光贴图 -->
-    <SidebarMaterialMapProperty property="transmissionMap" name="Transmission Map"/>
+    <SidebarMaterialMapProperty property="transmissionMap" name="Transmission Map" />
 
     <!-- thickness map 厚度贴图 -->
-    <SidebarMaterialMapProperty property="thicknessMap" name="Thickness Map"/>
+    <SidebarMaterialMapProperty property="thicknessMap" name="Thickness Map" />
 
     <!-- side 面 -->
     <SidebarMaterialConstantProperty property="side" name="Side" :options="[
             { label: 'Front', value:0 },
             { label: 'Back', value: 1 },
             { label: 'Double', value: 2 }
-        ]"/>
+        ]" />
 
     <!-- size 大小 -->
-    <SidebarMaterialNumberProperty property="size" name="Size" :range="[0, Infinity]"/>
+    <SidebarMaterialNumberProperty property="size" name="Size" :range="[0, Infinity]" />
 
     <!-- sizeAttenuation 大小衰减 -->
-    <SidebarMaterialBooleanProperty property="sizeAttenuation" name="Size Attenuation"/>
+    <SidebarMaterialBooleanProperty property="sizeAttenuation" name="Size Attenuation" />
 
     <!-- flatShading 平面着色 -->
-    <SidebarMaterialBooleanProperty property="flatShading" name="Flat Shading"/>
+    <SidebarMaterialBooleanProperty property="flatShading" name="Flat Shading" />
 
     <!-- blending 混合 -->
     <SidebarMaterialConstantProperty property="blending" name="Blending" :options="[
@@ -437,25 +438,25 @@ const handleUserDataClick = () => {
             { label: 'Subtractive', value: 3 },
             { label: 'Multiply', value: 4 },
             { label: 'Custom', value: 5 }
-        ]"/>
+        ]" />
 
     <!-- opacity 透明度 -->
-    <SidebarMaterialNumberProperty property="opacity" name="Opacity" :decimal="1" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="opacity" name="Opacity" :decimal="2" :range="[0, 1]" />
 
     <!-- transparent 透明性 -->
-    <SidebarMaterialBooleanProperty property="transparent" name="Transparent"/>
+    <SidebarMaterialBooleanProperty property="transparent" name="Transparent" />
 
     <!-- alpha test α测试 -->
-    <SidebarMaterialNumberProperty property="alphaTest" name="Alpha Test" :decimal="1" :range="[0, 1]"/>
+    <SidebarMaterialNumberProperty property="alphaTest" name="Alpha Test" :decimal="2" :range="[0, 1]" />
 
     <!-- depth test 深度测试 -->
-    <SidebarMaterialBooleanProperty property="depthTest" name="Depth Test"/>
+    <SidebarMaterialBooleanProperty property="depthTest" name="Depth Test" />
 
     <!-- depth write 深度缓冲 -->
-    <SidebarMaterialBooleanProperty property="depthWrite" name="Depth Write"/>
+    <SidebarMaterialBooleanProperty property="depthWrite" name="Depth Write" />
 
     <!-- wireframe 线框 -->
-    <SidebarMaterialBooleanProperty property="wireframe" name="Wireframe"/>
+    <SidebarMaterialBooleanProperty property="wireframe" name="Wireframe" />
 
     <!-- userdata 自定义数据 -->
     <div class="sider-scene-material-item">
@@ -470,7 +471,8 @@ const handleUserDataClick = () => {
               v-model:value="objectData.userData" @update:value="update" />
   </div>
 
-  <n-result v-show="!hasMaterial" status="418" title="Empty" :description="t('prompt[\'No material data for the time being\']')" />
+  <n-result v-show="!hasMaterial" status="418" title="Empty"
+            :description="t('prompt[\'No material data for the time being\']')" />
 </template>
 
 <style lang="less" scoped>
