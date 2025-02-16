@@ -4,7 +4,7 @@
  * @date 2024-07-31
  * @version 4.0.0
  */
-import { ObjectLoader, Mesh, Vector3, Group, Bone } from "three";
+import { ObjectLoader, Mesh, Group, Bone } from "three";
 import JSZip from "jszip";
 import { BASE64_TYPES, TYPED_ARRAYS } from "@/utils/common/constant";
 import { unzip, zip } from "@/utils/common/pako";
@@ -340,9 +340,8 @@ export class Package {
                 camera: window.viewer.camera.toJSON(),
                 scene: sceneJson,
                 scripts: window.editor.scripts,
-                // 控制器target
                 controls: {
-                    target: window.viewer.modules.controls.target,
+                    state: window.viewer.modules.controls.toJSON(),
                 },
                 totalZipNumber: totalNum,
                 sceneInfo: packConfig.sceneInfo,
@@ -617,9 +616,9 @@ export class Package {
             window.editor.fromJSON(sceneJson).then(async (fromJSONResult: IFromJSONResult) => {
                 unpackConfig.onSceneLoad && unpackConfig.onSceneLoad(sceneJson, configJson, fromJSONResult);
 
-                // 还原控制器中心
-                if (sceneJson.controls?.target) {
-                    window.viewer.modules.controls.target = new Vector3(sceneJson.controls.target.x, sceneJson.controls.target.y, sceneJson.controls.target.z);
+                // 还原控制器
+                if (sceneJson.controls?.state) {
+                    window.viewer.modules.controls.fromJSON(sceneJson.controls.state,true);
                 }
 
                 // 防止项目只有一个包的情况造成不触发proxy set
