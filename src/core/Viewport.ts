@@ -12,7 +12,6 @@ import {ViewportEffect} from "@/core/Viewport.Effect";
 import ViewCube from "@/core/Viewport.Cube";
 import {XR} from '@/core/Viewport.XR';
 import {ViewportSignals} from "@/core/Viewport.Signals";
-import {ViewportPathTracer} from './Viewport.PathTracer';
 import {TweenManger} from "@/core/utils/TweenManager";
 import {ShaderMaterialManager} from "@/core/shaderMaterial/ShaderMaterialManager";
 import {Package} from "@/core/loader/Package";
@@ -53,7 +52,6 @@ export class Viewport {
     private sceneHelpers: THREE.Scene;
     renderer: THREE.WebGLRenderer | undefined;
     private pmremGenerator: THREE.PMREMGenerator | undefined;
-    private pathtracer: ViewportPathTracer | undefined;
 
     private showSceneHelpers: boolean = true;
     private grid: THREE.Group;
@@ -97,6 +95,7 @@ export class Viewport {
         (this.selectionBox.material as THREE.Material).depthTest = false;
         (this.selectionBox.material as THREE.Material).transparent = true;
         this.selectionBox.visible = false;
+        // @ts-ignore
         this.sceneHelpers.add(this.selectionBox);
 
         // 拾取对象
@@ -146,8 +145,6 @@ export class Viewport {
         // 创建一个PMREMGenerator，从立方体映射环境纹理生成预过滤的 Mipmap 辐射环境贴图
         this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
         this.pmremGenerator.compileEquirectangularShader();
-
-        this.pathtracer = new ViewportPathTracer(this.renderer);
 
         // 在container中最前面插入渲染器的dom元素
         this.container.insertBefore(this.renderer.domElement, this.container.firstChild);
@@ -281,7 +278,7 @@ export class Viewport {
      * 加载环境和背景
      */
     loadDefaultEnvAndBackground() {
-        window.editor.resource.loadURLTexture(`/static/resource/hdr/kloofendal_48d_partly_cloudy_puresky_2k.hdr`, (texture: THREE.Texture) => {
+        window.editor.resource.loadURLTexture(`/static/resource/hdr/kloofendal_48d_partly_cloudy_puresky_1k.hdr`, (texture: THREE.Texture) => {
             texture.mapping = THREE.EquirectangularReflectionMapping;
             this.scene.environment = texture;
             this.scene.background = texture;
@@ -393,39 +390,6 @@ export class Viewport {
         }
 
         if (needsUpdate) this.render();
-
-        this.updatePT();
-    }
-
-    initPT() {
-        if (window.editor.viewportShading === 'realistic') {
-            this.pathtracer?.init(this.scene, this.camera);
-        }
-    }
-
-    updatePTBackground() {
-        if (window.editor.viewportShading === 'realistic') {
-            this.pathtracer?.setBackground();
-        }
-    }
-
-    updatePTEnvironment() {
-        if (window.editor.viewportShading === 'realistic') {
-            this.pathtracer?.setEnvironment();
-        }
-    }
-
-    updatePTMaterials() {
-        if (window.editor.viewportShading === 'realistic') {
-            this.pathtracer?.updateMaterials();
-        }
-    }
-
-    updatePT() {
-        if (window.editor.viewportShading === 'realistic') {
-            this.pathtracer?.update();
-            useDispatchSignal("pathTracerUpdated", this.pathtracer?.getSamples())
-        }
     }
 
     render() {

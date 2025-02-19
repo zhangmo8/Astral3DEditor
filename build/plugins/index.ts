@@ -7,7 +7,6 @@ import topLevelAwait from "vite-plugin-top-level-await";
 // 自动按需引入Naive UI组件
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
-import mkcert from 'vite-plugin-mkcert';
 import EnhanceLog from 'vite-plugin-enhance-log';
 
 import {createConfigPluginConfig} from "./appConfig";
@@ -49,9 +48,7 @@ export async function createPlugins({isBuild,compress,enableAnalyze}: Options) {
             splitBy: '\n',
             preTip: '🚀🚀🚀🚀🚀🚀',
             enableFileName: { enableDir: false}
-        }),
-        // 本地开发https证书
-        mkcert()
+        })
     ];
 
     const appConfigPlugin = await createConfigPluginConfig(isBuild);

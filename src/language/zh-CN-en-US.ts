@@ -94,7 +94,6 @@ export default {
 				Front:"前视图",
 				Back:"后视图",
 				"Scene camera":"场景相机",
-				Realistic: "真实",
 				Solid: '原色',
 				Normals: '法向',
 				Wireframe: '线框',

@@ -63,9 +63,7 @@ export class ViewportSignals {
      */
     editorCleared() {
         this.viewport.modules.controls.setTarget(0, 0, 0,true);
-        this.viewport.pathtracer.reset();
 
-        this.viewport.initPT();
         this.viewport.render();
     }
 
@@ -266,7 +264,6 @@ export class ViewportSignals {
      * 手动场景渲染
      */
     sceneGraphChanged(){
-        this.viewport.initPT();
         this.render();
     }
 
@@ -274,7 +271,6 @@ export class ViewportSignals {
      * 切换主相机
      */
     cameraChanged(){
-        this.viewport.pathtracer.reset();
         this.render();
     }
 
@@ -311,9 +307,6 @@ export class ViewportSignals {
         const viewportShading = window.editor.viewportShading;
 
         switch ( viewportShading ) {
-            case 'realistic':
-                this.viewport.pathtracer.init(this.viewport.scene, this.viewport.camera);
-                break;
             case 'solid':
                 this.viewport.scene.overrideMaterial = null;
                 break;
@@ -442,7 +435,6 @@ export class ViewportSignals {
                 FXAA.material.uniforms[ 'resolution' ].value.y = 1 / (this.viewport.container.offsetHeight * pixelRatio);
             }
         }
-        this.viewport.pathtracer.setSize();
         this.render();
     }
 

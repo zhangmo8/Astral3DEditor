@@ -45,33 +45,27 @@ interface IOption {
 
 const options = ref<IOption[]>([
   {
-    key:"realistic",
-    label:cpt('layout.scene.toolbar.Realistic'),
-    icon:WindowBlackSaturation,
-    shortcuts:"ALT+1"
-  },
-  {
     key:"solid",
     label:cpt("layout.scene.toolbar.Solid"),
     icon:Contrast,
-    shortcuts:"ALT+2"
+    shortcuts:"ALT+1"
   },
   {
     key:"normals",
     label:cpt("layout.scene.toolbar.Normals"),
     icon:UvIndexAlt,
-    shortcuts:"ALT+3"
+    shortcuts:"ALT+2"
   },
   {
     key:"wireframe",
     label:cpt("layout.scene.toolbar.Wireframe"),
     icon:Wikis,
-    shortcuts:"ALT+4"
+    shortcuts:"ALT+3"
   }
 ])
 
 // default value is "solid"
-const current = ref<IOption>(options.value[1]);
+const current = ref<IOption>(options.value[0]);
 
 function handlerChange(value: IOption) {
   current.value = value;

@@ -72,7 +72,7 @@ function createRenderer() {
         antialias: projectConfigStore.renderer.antialias,
         alpha: true,
         //TODO 想把canvas画布上内容下载到本地，需要设置为true。不清除画布缓存，费性能，SDK完善后设置为false
-        preserveDrawingBuffer: false,
+        preserveDrawingBuffer: true,
         powerPreference: "high-performance",
     });
     // }
