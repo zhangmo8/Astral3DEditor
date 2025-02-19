@@ -101,6 +101,7 @@
 ```
 Tips:
 * `Node > 18.0.0`;
+* 内置后端默认连接`http://editor-test-api.astraljs.com`,该后端仅供调试，不定期清空数据
 
 ## 打包
 ```shell
