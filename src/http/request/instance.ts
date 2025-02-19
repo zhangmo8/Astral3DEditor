@@ -6,7 +6,7 @@ import {
     handleResponseError,
     handleServiceResult,
 } from '@/utils/service';
-import {Service} from "../../../types/network";
+import {Service} from "~/network";
 import ConcurrencyManager from "./ConcurrencyManager";
 
 /**

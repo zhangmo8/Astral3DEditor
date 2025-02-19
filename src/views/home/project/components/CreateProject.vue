@@ -44,7 +44,7 @@ async function getExampleScene() {
   })
   if (res.data === null) return;
 
-  res.data.items.forEach(item => {
+  res.data.items?.forEach(item => {
     switch (item.projectType) {
       case 0:
         exampleList.Web3D.push(item);

@@ -178,7 +178,6 @@ export class ViewportSignals {
                 break;
         }
 
-        this.viewport.updatePTBackground();
         this.render();
     }
 
@@ -210,7 +209,6 @@ export class ViewportSignals {
                 break;
         }
 
-        this.viewport.updatePTEnvironment();
         this.render();
     }
 
@@ -296,7 +294,6 @@ export class ViewportSignals {
         // 替换控制器相机
         // this.viewport.modules.controls.camera = viewportCamera;
 
-        this.viewport.initPT();
         this.render();
     }
 
@@ -382,7 +379,6 @@ export class ViewportSignals {
             helper.update();
         }
 
-        this.viewport.initPT();
         this.render();
     }
 
@@ -408,7 +404,6 @@ export class ViewportSignals {
             this.viewport.box.setFromObject(object, true);
         }
 
-        this.viewport.initPT();
         this.render();
     }
 
@@ -416,7 +411,6 @@ export class ViewportSignals {
      * material 变更
      */
     materialChanged(){
-        this.viewport.updatePTMaterials();
         this.render();
     }
 

@@ -73,7 +73,7 @@ function handlerChange(value: IOption) {
 }
 
 function editorCleared() {
-  current.value = options.value[1];
+  current.value = options.value[0];
   window.editor.setViewportShading(current.value.key);
 }
 

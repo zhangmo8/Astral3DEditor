@@ -82,7 +82,7 @@ function save(){
         zipUploadFun:async (zipFile: File) => {
           const res = await fetchUpload({
             file: zipFile,
-            biz: `ES3DEditor/scene/${biz}`,
+            biz: `astral/3DEditor/scene/${biz}`,
           })
           if (res.error !== null) {
             window.$message?.error(window.$t("scene['Failed to save project!']"));
