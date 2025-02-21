@@ -293,8 +293,8 @@ class Editor {
 				helper = new THREE.SpotLightHelper(object);
 			} else if (object.isHemisphereLight) {
 				helper = new THREE.HemisphereLightHelper(object, 1);
-			} else if (object.isSkinnedMesh) {
-				helper = new THREE.SkeletonHelper(object.skeleton.bones[0]);
+            } else if (object.isSkinnedMesh && object.skeleton?.bones) {
+                helper = new THREE.SkeletonHelper(object.skeleton.bones[0]);
 			} else if (object.isBone === true && object.parent?.isBone !== true) {
 				helper = new THREE.SkeletonHelper(object);
 			} else {
