@@ -299,6 +299,8 @@ export class ViewportSignals {
 
     /**
      * 场景Shading变更
+     * @description 当开启OutlinePass后处理时，设置scene.overrideMaterial无效。
+     * @link https://github.com/mrdoob/three.js/issues/30577
      */
     viewportShadingChanged(){
         const viewportShading = window.editor.viewportShading;
