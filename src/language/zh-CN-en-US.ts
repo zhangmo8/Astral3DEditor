@@ -100,12 +100,12 @@ export default {
 				local: '本地坐标',
 				world: '世界坐标',
 			},
-			viewportInfo: {
-				objects: '物体',
-				vertices: '顶点',
-				triangles: '三角面',
-				frametime: '帧时',
-			},
+            viewportInfo: {
+                Objects: '物体',
+                Vertices: '顶点',
+                Triangles: '三角面',
+                'Frame time': '帧时',
+            },
 		},
 		sider: {
 			Scene: '场景',

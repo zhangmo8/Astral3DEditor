@@ -1,28 +1,41 @@
 <template>
-    <div id="info" class="absolute left-10px bottom-10px color-white">
-        <span class="ml-6px">{{ t("layout.scene.viewportInfo.objects") }}: {{ objectsText }}</span>
-        <span class="ml-6px">{{ t("layout.scene.viewportInfo.vertices") }}: {{ verticesText }}</span>
-        <span class="ml-6px">{{ t("layout.scene.viewportInfo.triangles") }}: {{ trianglesText }}</span>
-        <span class="ml-6px">{{ t("layout.scene.viewportInfo.frametime") }}: {{ frametimeText }}</span>
+    <div class="absolute left-10px bottom-10px color-white text-12px">
+        <span class="ml-6px">{{ t("layout.scene.viewportInfo.Objects") }}: {{ objectsText }}</span>
+        <span class="ml-6px">{{ t("layout.scene.viewportInfo.Vertices") }}: {{ verticesText }}</span>
+        <span class="ml-6px">{{ t("layout.scene.viewportInfo.Triangles") }}: {{ trianglesText }}</span>
+        <span class="ml-6px">{{ t("layout.scene.viewportInfo.Frame time") }}: {{ frameTimeText }}</span>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { useAddSignal } from "@/hooks/useSignal";
-import {t} from "@/language";
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useAddSignal, useRemoveSignal } from "@/hooks/useSignal";
+import { t } from "@/language";
 
 const objectsText = ref("0");
 const verticesText = ref("0");
 const trianglesText = ref("0");
-const frametimeText = ref("0 ms");
+const frameTimeText = ref("0 ms");
+
+onMounted(() => {
+    useAddSignal("objectAdded", update);
+    useAddSignal("objectRemoved", update);
+    useAddSignal("geometryChanged", update);
+    useAddSignal("sceneRendered", updateFrameTime);
+})
+onBeforeUnmount(() => {
+    useRemoveSignal("objectAdded", update);
+    useRemoveSignal("objectRemoved", update);
+    useRemoveSignal("geometryChanged", update);
+    useRemoveSignal("sceneRendered", updateFrameTime);
+})
 
 function update() {
     const scene = window.editor.scene;
     let objects = 0, vertices = 0, triangles = 0;
     for (let i = 0, l = scene.children.length; i < l; i++) {
         const object = scene.children[i];
-        object.traverseVisible(function (object) {
+        object.traverseByCondition((object) => {
             objects++;
             if (object.isMesh || object.isPoints) {
                 const geometry = object.geometry;
@@ -35,6 +48,8 @@ function update() {
                     }
                 }
             }
+        }, (c) => {
+            return !c.ignore;
         });
     }
 
@@ -43,18 +58,7 @@ function update() {
     trianglesText.value = triangles.format();
 }
 
-useAddSignal("objectAdded",update);
-useAddSignal("objectRemoved",update);
-useAddSignal("geometryChanged",update);
-
-function updateFrametime( frametime ) {
-    frametimeText.value = Number( frametime ).toFixed( 2 ) + ' ms';
+function updateFrameTime(frameTime: string) {
+    frameTimeText.value = Number(frameTime).toFixed(2) + ' ms';
 }
-useAddSignal("sceneRendered",updateFrametime);
 </script>
-
-<style scoped>
-#info {
-    font-size: 12px;
-}
-</style>
