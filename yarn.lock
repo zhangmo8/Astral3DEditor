@@ -917,13 +917,6 @@
   resolved "https://registry.npmmirror.com/@types/node/-/node-18.16.19.tgz#cb03fca8910fdeb7595b755126a8a78144714eea"
   integrity sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==
 
-"@types/splitpanes@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.npmmirror.com/@types/splitpanes/-/splitpanes-2.2.1.tgz#7ff67e639b16eecfc3ad403269dff320cf96e866"
-  integrity sha512-H5BgO6UdJRzz5ddRzuGvLBiPSPEuuHXb5ET+7avLLrEx1uc7f5Ut5oLMDQsfvGtHBBAFczt1QNYuDf27wHbvDQ==
-  dependencies:
-    vue "^2.0.0"
-
 "@types/stats.js@*":
   version "0.17.3"
   resolved "https://registry.npmmirror.com/@types/stats.js/-/stats.js-0.17.3.tgz#705446e12ce0fad618557dd88236f51148b7a935"
@@ -3007,11 +3000,6 @@ split-on-first@^1.0.0:
   version "1.1.0"
   resolved "https://registry.npmmirror.com/split-on-first/-/split-on-first-1.1.0.tgz#f610afeee3b12bce1d0c30425e76398b78249a5f"
   integrity sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==
-
-splitpanes@3.1.5:
-  version "3.1.5"
-  resolved "https://registry.npmmirror.com/splitpanes/-/splitpanes-3.1.5.tgz#de81da25681c252d131747a9cb48a17156e2b210"
-  integrity sha512-r3Mq2ITFQ5a2VXLOy4/Sb2Ptp7OfEO8YIbhVJqJXoFc9hc5nTXXkCvtVDjIGbvC0vdE7tse+xTM9BMjsszP6bw==
 
 state-local@^1.0.6:
   version "1.0.7"

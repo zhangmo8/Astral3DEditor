@@ -6,9 +6,6 @@ import {Viewport} from '@/core/Viewport';
 import ViewportInfo from '@/components/viewport/ViewportInfo.vue';
 import {useAddSignal, useDispatchSignal, useRemoveSignal} from "@/hooks/useSignal";
 import {useDrawingStore} from "@/store/modules/drawing";
-// 窗口分割（为图纸组件）
-import {Splitpanes, Pane} from 'splitpanes';
-import 'splitpanes/dist/splitpanes.css';
 import Drawing from "@/components/drawing/Drawing.vue";
 import Toolbar from "@/components/viewport/Toolbar.vue";
 import {useDragStore} from "@/store/modules/drag";
@@ -128,18 +125,19 @@ onBeforeUnmount(() => {
 <template>
   <n-spin ref="viewerContainerRef" :show="globalConfigStore.loading" @drop="sceneDrop" @dragover="sceneDragOver"  @dragenter="sceneDragEnter"
           @dragleave="sceneDragLeave">
-    <splitpanes class="h-full" @resize="onViewPortResize" @resized="onViewPortResize">
-      <pane min-size="10" ref="drawingRef" v-if="drawingStore.getIsUploaded">
-        <Drawing />
-      </pane>
-      <pane min-size="10">
+    <n-split direction="horizontal" :max="0.85" :min="0.15"
+             :pane1-style="{display: drawingStore.getIsUploaded ? 'flex' : 'none'}" :resize-trigger-size="drawingStore.getIsUploaded ? 3 : 0">
+      <template #1 v-if="drawingStore.getIsUploaded">
+        <Drawing ref="drawingRef" />
+      </template>
+      <template #2>
         <Toolbar />
 
         <div id="viewport" ref="viewportRef" class="absolute top-0 left-0 w-full h-full">
           <ViewportInfo />
         </div>
-      </pane>
-    </splitpanes>
+      </template>
+    </n-split>
 
     <!--  RVT BIM 构件信息悬浮框  -->
     <n-card v-if="showBimInfo" class="absolute top-40px right-1 max-w-300px" content-style="padding: 5px 10px;">
@@ -186,38 +184,12 @@ onBeforeUnmount(() => {
     width: 100%;
     height: 100%;
 
-    .splitpanes {
-      &__pane {
+    .n-split {
+      &-pane-1,&-pane-2 {
         display: flex;
         justify-content: center;
         align-items: center;
         position: relative;
-      }
-
-      &__splitter {
-        background-color: #ccc;
-        position: relative;
-
-        &:before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 0;
-          transition: opacity 0.4s;
-          background-color: rgba(255, 0, 0, 0.3);
-          opacity: 0;
-          z-index: 1;
-        }
-
-        &:hover:before {
-          opacity: 1;
-        }
-      }
-
-      &--vertical > .splitpanes__splitter:before {
-        left: -15px;
-        right: -15px;
-        height: 100%;
       }
     }
 
