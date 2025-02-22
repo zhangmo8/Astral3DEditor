@@ -13,13 +13,13 @@ import Drawing from "@/components/drawing/Drawing.vue";
 import Toolbar from "@/components/viewport/Toolbar.vue";
 import {useDragStore} from "@/store/modules/drag";
 import IFCProperties from "@/components/viewport/IFCProperties.vue";
+import { useGlobalConfigStore } from '@/store/modules/globalConfig';
+
+const globalConfigStore = useGlobalConfigStore();
 
 const viewerContainerRef = ref();
 const viewportRef = ref();
 const drawingRef = ref();
-
-const loading = ref(false);
-const loadingText = ref("");
 
 const showBimInfo = ref(false);
 const bimInfo = ref({})
@@ -88,13 +88,6 @@ function sceneDragLeave(e) {
 }
 
 /** 鼠标拖拽事件相关 End **/
-function changeLoading(bool: boolean) {
-  loading.value = bool;
-}
-
-function changeLoadingText(str: string) {
-  loadingText.value = str;
-}
 
 function objectSelected(object) {
   if (!object) {
@@ -124,20 +117,16 @@ onMounted(async () => {
   });
   resizeObserver.observe(viewportRef.value);
 
-  useAddSignal("toggleGlobalLoading",changeLoading);
-  useAddSignal("setGlobalLoadingText",changeLoadingText);
   useAddSignal("objectSelected",objectSelected);
 })
 
 onBeforeUnmount(() => {
-  useRemoveSignal("toggleGlobalLoading",changeLoading);
-  useRemoveSignal("setGlobalLoadingText",changeLoadingText);
   useRemoveSignal("objectSelected",objectSelected);
 })
 </script>
 
 <template>
-  <n-spin ref="viewerContainerRef" :show="loading" @drop="sceneDrop" @dragover="sceneDragOver"  @dragenter="sceneDragEnter"
+  <n-spin ref="viewerContainerRef" :show="globalConfigStore.loading" @drop="sceneDrop" @dragover="sceneDragOver"  @dragenter="sceneDragEnter"
           @dragleave="sceneDragLeave">
     <splitpanes class="h-full" @resize="onViewPortResize" @resized="onViewPortResize">
       <pane min-size="10" ref="drawingRef" v-if="drawingStore.getIsUploaded">
@@ -183,7 +172,7 @@ onBeforeUnmount(() => {
     <!-- IFC BIM 构件信息悬浮框   -->
     <IFCProperties></IFCProperties>
 
-    <template #description>{{ loadingText }}</template>
+    <template #description>{{ globalConfigStore.loadingText }}</template>
   </n-spin>
 </template>
 

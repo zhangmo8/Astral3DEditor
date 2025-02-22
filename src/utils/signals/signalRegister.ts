@@ -112,14 +112,6 @@ const viewportSignals:SignalRegister = {
 }
 
 /**
- * 网络请求相关
- */
-const netWorkSignals:SignalRegister = {
-	toggleGlobalLoading:new Signal(),
-	setGlobalLoadingText:new Signal(),
-}
-
-/**
  * cesium 相关页面使用的
  */
 const cesiumSignals:SignalRegister = {
@@ -161,7 +153,6 @@ const otherSignals:SignalRegister = {
 export const SignalsRegister: SignalRegister = {
 	...editorSignals,
 	...viewportSignals,
-	...netWorkSignals,
 	...cesiumSignals,
 	...drawingSignals,
 	...previewSignals,

@@ -1,51 +1,31 @@
 <script lang="ts" setup>
 import {onMounted, onBeforeUnmount, ref, nextTick} from 'vue';
-import {useAddSignal,useRemoveSignal} from "@/hooks/useSignal";
-
 import ViewPort from '@/cesium/viewPort';
+import {useAddSignal,useRemoveSignal} from "@/hooks/useSignal";
+import { useGlobalConfigStore } from '@/store/modules/globalConfig';
+
+const globalConfigStore = useGlobalConfigStore();
 
 let cesiumViewPort: any = null;
 const cesiumRef = ref();
-const loading = ref(false);
-const loadingText = ref("");
 
-function handleSignals(isAdd:boolean){
-  function changeLoading(bool:boolean){
-    loading.value = bool;
-  }
-  function changeLoadingText(str:string){
-    loadingText.value = str;
-  }
-
-  const signals = {
-    "toggleGlobalLoading":changeLoading,
-    "setGlobalLoadingText":changeLoadingText
-  }
-  Object.keys(signals).forEach(name => {
-    isAdd ? useAddSignal(name,signals[name]) : useRemoveSignal(name,signals[name]);
-  })
-}
 
 onMounted(async () => {
   await nextTick();
 
   cesiumViewPort = new ViewPort(cesiumRef.value);
-
-  handleSignals(true);
 })
 
 onBeforeUnmount(() => {
   cesiumViewPort = null;
-
-  handleSignals(false);
 })
 </script>
 
 <template>
-  <n-spin :show="loading">
+  <n-spin :show="globalConfigStore.loading">
     <div id="cesiumContainer" ref="cesiumRef" class="absolute top-0 left-0 w-full h-full"></div>
 
-    <template #description>{{ loadingText }}</template>
+    <template #description>{{ globalConfigStore.loadingText }}</template>
   </n-spin>
 </template>
 

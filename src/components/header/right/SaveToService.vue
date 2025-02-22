@@ -5,6 +5,7 @@ import {t} from "@/language";
 import {zip} from "@/utils/common/pako";
 import {useDrawingStore} from "@/store/modules/drawing";
 import {DefaultScreenshot, useSceneInfoStore} from "@/store/modules/sceneInfo";
+import { useGlobalConfigStore } from '@/store/modules/globalConfig';
 import {useDispatchSignal} from "@/hooks/useSignal";
 import {fetchUpload} from "@/http/api/sys";
 import {filterSize} from "@/utils/common/file";
@@ -13,6 +14,7 @@ import {Service} from "~/network";
 
 const sceneInfoStore = useSceneInfoStore();
 const drawingStore = useDrawingStore();
+const globalConfigStore = useGlobalConfigStore();
 
 function save(){
   // 检查对应sceneId的工程是否存在
@@ -27,8 +29,8 @@ function save(){
     positiveText: window.$t('other.ok'),
     negativeText: window.$t('other.cancel'),
     onPositiveClick: async () => {
-      useDispatchSignal("setGlobalLoadingText", window.$t("scene['Generate scene data, please wait']"));
-      useDispatchSignal("toggleGlobalLoading", true);
+      globalConfigStore.loadingText = window.$t("scene['Generate scene data, please wait']");
+      globalConfigStore.loading = true;
 
       // 版本自动 +1
       sceneInfoStore.setDataFieldValue("sceneVersion",sceneInfoStore.data.sceneVersion + 1);
@@ -69,7 +71,7 @@ function save(){
         }
       }
 
-      useDispatchSignal("setGlobalLoadingText", window.$t("scene['Scene is being compressed...']"));
+      globalConfigStore.loadingText = window.$t("scene['Scene is being compressed...']");
 
       const packConfig = {
         // 首包名称
@@ -92,7 +94,7 @@ function save(){
         },
         // 打包进度回调
         onProgress: (progress: number) => {
-          useDispatchSignal("setGlobalLoadingText", progress + '%');
+          globalConfigStore.loadingText = progress + '%';
         },
         // 打包完成回调
         onComplete: (data: { firstUploadResult: any, totalSize: number, totalZipNumber: number }) => {
@@ -102,11 +104,11 @@ function save(){
           })
           params.drawingInfo =  undefined;
           fetchUpdateScene(sceneInfoStore.data.id,params).then((res: Service.SuccessResult<ISceneFetchData>) => {
-            useDispatchSignal("setGlobalLoadingText", window.$t("prompt.Saved successfully!"));
+            globalConfigStore.loadingText = window.$t("prompt.Saved successfully!");
 
             sceneInfoStore.setData(res.data);
             setTimeout(() => {
-              useDispatchSignal("toggleGlobalLoading", false);
+              globalConfigStore.loading = false;
             }, 500)
           })
         }

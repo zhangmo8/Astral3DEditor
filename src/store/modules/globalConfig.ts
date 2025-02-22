@@ -1,3 +1,4 @@
+import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import {darkTheme, useOsTheme} from "naive-ui";
 import type { GlobalTheme } from 'naive-ui';
@@ -63,10 +64,16 @@ export const useGlobalConfigStore = defineStore('global-config',()=>{
         setMainColor(color)
     }
 
+    /* 全局Loading */
+    const loading = ref(false);
+    const loadingText = ref("");
+
     return {
         theme:themeLocal,
         locale:localeLocal,
         mainColor,
+        loading,
+        loadingText,
         getProviderTheme,
         setTheme,
         setLocale:setLocaleLocal,

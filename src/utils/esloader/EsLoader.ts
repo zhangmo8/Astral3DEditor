@@ -1,7 +1,9 @@
 import JSZip from "jszip";
 import {BASE64_TYPES, TYPED_ARRAYS} from "@/utils/common/constant";
-import {useDispatchSignal} from "@/hooks/useSignal";
 import {unzip, zip} from "@/utils/common/pako";
+import { useGlobalConfigStoreWithOut } from '@/store/modules/globalConfig';
+
+const globalConfigStore = useGlobalConfigStoreWithOut();
 
 interface SourceData {
     name: string;
@@ -112,7 +114,7 @@ export class EsLoader {
     }
 
     private async zip(sourceData: SourceData[], onComplete: (zip: Blob) => void) {
-        useDispatchSignal("setGlobalLoadingText", window.$t("scene['Scene is being compressed...']"));
+        globalConfigStore.loadingText = window.$t("scene['Scene is being compressed...']");
 
         let geometryData: SourceData[] = [];
         sourceData.forEach((item) => {
