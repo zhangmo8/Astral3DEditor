@@ -46,6 +46,7 @@ class Editor {
 	metadata: Object;
 	protected viewportCamera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
 	protected viewportShading: string;
+	isPreview: boolean = false;
 
 	constructor() {
 		_DEFAULT_CAMERA.name = window.$t("core.editor['Default Camera']");
@@ -279,6 +280,8 @@ class Editor {
 	}
 
 	addHelper(object, helper?) {
+		if(this.isPreview) return;
+
 		let geometry = new THREE.SphereGeometry(2, 4, 2);
 		let material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
 

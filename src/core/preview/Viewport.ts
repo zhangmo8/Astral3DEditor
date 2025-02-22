@@ -97,6 +97,9 @@ export class Viewport {
         this.sceneHelpers = window.editor.sceneHelpers;
         this.camera = window.editor.camera;
 
+        // 设置为预览模式
+        window.editor.isPreview = true;
+
         this.renderer = this.initEngine();
 
         this.xrButton = XRButton.createButton(this.renderer);
