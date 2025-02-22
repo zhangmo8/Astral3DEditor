@@ -100,8 +100,8 @@ onMounted(() => {
         </n-layout-sider>
 
         <n-layout-content>
-          <Layout.Scene v-show="!sceneInfoStore.isCesiumScene"></Layout.Scene>
-          <Layout.Cesium v-if="sceneInfoStore.isCesiumScene"></Layout.Cesium>
+          <Layout.Scene v-if="!sceneInfoStore.isCesiumScene"></Layout.Scene>
+          <Layout.Cesium v-else></Layout.Cesium>
         </n-layout-content>
 
         <n-layout-sider
