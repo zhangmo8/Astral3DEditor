@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AssetsLibrary: typeof import('./src/components/assets/AssetsLibrary.vue')['default']
     BIMLibrary: typeof import('./src/components/assets/BIMLibrary.vue')['default']
+    BIMProperties: typeof import('./src/components/viewport/BIMProperties.vue')['default']
     BimUploadDialog: typeof import('./src/components/assets/bimLibrary/BimUploadDialog.vue')['default']
     CAD: typeof import('./src/components/drawing/toolbar/CAD.vue')['default']
     CadLayers: typeof import('./src/components/drawing/toolbar/CadLayers.vue')['default']
@@ -88,6 +89,7 @@ declare module 'vue' {
     NSkeleton: typeof import('naive-ui')['NSkeleton']
     NSlider: typeof import('naive-ui')['NSlider']
     NSpin: typeof import('naive-ui')['NSpin']
+    NSplit: typeof import('naive-ui')['NSplit']
     NSwitch: typeof import('naive-ui')['NSwitch']
     NTabPane: typeof import('naive-ui')['NTabPane']
     NTabs: typeof import('naive-ui')['NTabs']
@@ -159,6 +161,7 @@ declare module 'vue' {
     Theme: typeof import('./src/components/setting/common/Theme.vue')['default']
     Toolbar: typeof import('./src/components/viewport/Toolbar.vue')['default']
     UserData: typeof import('./src/components/code/UserData.vue')['default']
+    Viewport: typeof import('./src/components/viewport/Viewport.vue')['default']
     ViewportCamera: typeof import('./src/components/viewport/ViewportCamera.vue')['default']
     ViewportInfo: typeof import('./src/components/viewport/ViewportInfo.vue')['default']
     ViewportShading: typeof import('./src/components/viewport/ViewportShading.vue')['default']
