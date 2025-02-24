@@ -1,124 +1,105 @@
-# Astral 3D Editor
+# <img src="https://editor.astraljs.com/static/images/logo/logo.png" width="30" height="30"> Astral 3D Editor
 
-🌍
-*[English](README.en.md)*
-🌍
-*[简体中文](README.md)*
+🌍 [English](README.en.md) | 简体中文
 
-### Based on vue3 and ThreeJs, see [Doc](http://editor-doc.astraljs.com/) for details
+[![Online Demo](https://img.shields.io/badge/Online_Demo-Astral_3D_Editor-8732D7?style=for-the-badge&logo=google-chrome&logoColor=white)](https://editor.astraljs.com)
 
-<div style="text-align: center">
+> Modern Web 3D editor based on Vue3 + Three.js
 
-![Static Badge](https://img.shields.io/badge/Vue-3.3.4-green)
-![Static Badge](https://img.shields.io/badge/NaiveUI-2.34.4-green)
-![Static Badge](https://img.shields.io/badge/ThreeJS-r170-8732D7)
-![Static Badge](https://img.shields.io/badge/Cesium-1.107.0-8732D7)
-![Static Badge](https://img.shields.io/badge/UnoCSS-0.46.5-8732D7)
-<br />
-![Static Badge](https://img.shields.io/badge/license-MIT-blue)
-
+<div align="center">
+  <img src="http://editor-doc.astraljs.com/images/home/industryDark.png" width="800" alt="Editor Preview">
 </div>
 
-***
+## 🚀 Core competence
 
-## WeChat Group
-<img src="https://upyun.astraljs.com/static/images/WeChatGroup.jpg" width="500px">
+### Core function
+-✅ Multi-format support: 30+ model format (GLTF/OBJ/FBX/GLB/RVT/IFC, etc.)
+- ✅ BIM Model Lightweight Demonstration (RVT/IFC)
+-✅ CAD drawing analysis (DWG/DXF)
+- ✅ Scenario subcontract storage and loading
+- ✅ WebSocket Multi-party collaboration
 
-Click [here](https://upyun.astraljs.com/static/images/WeChatGroup.jpg) view the latest group invitation pictures。
+### Expansion capability
+- 🧩 plug-in system
+- 📜 When the script is running
+- 💫 Particle system
+- ❄️ Weather system
+- ☁️ Cloud Storage Integration (USS again)
 
-***
+### Coming soon
+- 🚧 Animation editor
+- 🚧 Physical engine support
+- 🚧 WebGPU support
+- 🚧 Data components (API/WebSocket)
+- 🚧 low code data large screen
 
-## Peculiarity：
-- [x] Model import display, support OBJ, FBX, GLTF, GLB, RVT, IFC, SEA, 3DM, 3DS, 3MF, AMF, DAE, DRC, PLY, SVG, JSON and other 30+ formats;
-- [x] BIM model (RVT, IFC) lightweight display;
-- [x] Analysis of CAD drawings (DWG, DXF);
-- [x] Scene subcontract store read;
-- [x] WebSocket collaboration;
-- [x] Upyun USS store;
-- [x] Golang + MySQL backend support;
-- [x] Run script;
-- [x] Plug-in system;
-- [ ] Animation editor;
-- [ ] Physical engine support;
-- [ ] Particle system support;
-- [ ] WebGPU support;
-- [ ] Data components (tentatively support: API interface, WebSocket, not support: front-end SQL, GraphQL);
-- [ ] VUE / React components support;
-- [ ] Low code data large screen;
+## 🛠️ Technology stack
 
-[//]: # (## 工程结构)
-[//]: # (```)
-[//]: # (|-- .vscode                          // vscode配置文件)
-[//]: # (|-- build                            // 打包配置)
-[//]: # (|-- public )
-[//]: # (|   |-- library                      // 静态资源库)
-[//]: # (|   |-- release                      // 发布包模板         )
-[//]: # (|   |-- static                       // 项目静态资源)
-[//]: # (|   |-- logo.svg                     // Logo               )
-[//]: # (|-- src                              // 源码目录               )
-[//]: # (|   |-- cesium                       // cesium 场景相关)
-[//]: # (|   |-- components                   // 组件)
-[//]: # (|   |-- config                       // 项目各类配置)
-[//]: # (|   |-- core                         // 编辑器核心代码)
-[//]: # (|       |-- commands                 // 编辑器操作命令集合)
-[//]: # (|       |-- exporters                // 自定义模型导出器)
-[//]: # (|       |-- libs                     // 第三方相关js库)
-[//]: # (|   |-- hooks                        // 钩子函数)
-[//]: # (|   |-- http                         // 封装请求)
-[//]: # (|   |-- language                     // i18n 国际化配置文件夹)
-[//]: # (|   |-- router                       // 路由配置)
-[//]: # (|   |-- store                        // Pinia 状态管理)
-[//]: # (|   |-- utils                        // 全局公用函数目录    )
-[//]: # (|   |-- views                        // vue页面            )
-[//]: # (|   |-- App.vue                      // App入口文件)
-[//]: # (|   |-- main.ts                      // 程序入口文件 )
-[//]: # (|-- types                            // 全局类型定义目录 )
-[//]: # (|-- .env                             // 通用环境文件)
-[//]: # (|-- .env.development                 // 开发环境)
-[//]: # (|-- .env.production                  // 生产环境)
-[//]: # (|-- .gitignore                       // git ingnore)
-[//]: # (|-- index.html                       // 入口html文件)
-[//]: # (|-- package.json                     // 项目及工具的依赖配置文件)
-[//]: # (|-- README.md                        // README)
-[//]: # (|-- tsconfig.json                     // 指定了编译项目所需的根目录下的文件以及编译选项)
-[//]: # (|-- vite.config.ts                    // Vite配置文件)
-[//]: # (|-- yarn.lock                    )
-[//]: # (```)
+![Vue3](https://img.shields.io/badge/Vue-3.3.4-4FC08D?logo=vuedotjs)
+![Three.js](https://img.shields.io/badge/Three.js-r170-000000?logo=threedotjs)
+![Cesium](https://img.shields.io/badge/Cesium-1.107.0-0133B4?logo=cesium)
+![NaiveUI](https://img.shields.io/badge/Naive_UI-2.39.0-66C060?logo=vue.js)
+![UnoCSS](https://img.shields.io/badge/UnoCSS-0.46.5-333333?logo=unocss)
+![Go](https://img.shields.io/badge/Backend-Go_1.20-00ADD8?logo=go)
+![MIT License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
-## Back-end code
-* Golang's implementation: [Astral3DEditorGoBack](https://github.com/mlt131220/ES3DEditorGoBack)
+## ⚡ Quick start
 
-## Quick start
-```shell
-   git clone https://github.com/mlt131220/Astral3DEditor.git
+### pre-demand
+- Node.js ≥ 18.x
+- Yarn
+
+### Local run
+```bash
+git clone https://github.com/mlt131220/Astral3DEditor.git
+cd Astral3DEditor
+yarn install
+yarn dev
 ```
 
-## Run
-```shell
-    cd Astral3DEditor
-    yarn install
-    yarn run dev
-```
-Tips:
-* `Node > 18.0.0`;
+> 📢 Note: default to test the back-end ` http://43.140.200.138:8080 ` (data not emptying)
 
-## Build
-```shell
-    yarn run build
+### Production construction
+```bash
+yarn build
 ```
 
-## Thanks for sponsoring🌹🌹🌹
-If the project is to help to you, please leave you in [here](https://github.com/mlt131220/ES-3DEditor/issues/2) site, let more people see. Your reply will be the motivation for me to continue updating and maintaining。 </br></br>
-This project code is completely open source and free to learn & use, if you are happy and want to donate, you can scan the QR code below：</br>
-<img src="https://upyun.astraljs.com/static/images/alipay.jpg" width="320px">
-<img src="https://upyun.astraljs.com/static/images/wepay.jpg" width="320px">
+## 📚 Ecological correlation
 
-## Declaration of interest
-This project is open source based on the Apache-2.0 protocol, anyone can use it for free, but in any case, please do not use it for commercial purposes, please contact the author for authorization.
+### Back-end implementation
+[![Go Backend](https://img.shields.io/badge/Back_end_implementation-Astral3DEditorGoBack-00ADD8?logo=go)](https://github.com/mlt131220/ES3DEditorGoBack)
 
-## Disclaimer
-This project is only for learning and exchange, do not use for any illegal purposes, otherwise the consequences will be your own.
-The author assumes no legal responsibility for any problems arising from the use of this project (original project or after secondary creation).
+### Document center
+[![Documentation](https://img.shields.io/badge/Document_center-Astral_Docs-8732D7?logo=gitbook)](http://editor-doc.astraljs.com/)
 
-## Star History
+## 💬 Join the community
+
+Get the latest news and technical support in the following ways:
+
+[![WeChat Group](https://img.shields.io/badge/WeChat_Group-Scan_code_to_join-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/WeChatGroup.jpg)
+[![Contact Author](https://img.shields.io/badge/Contact_author-Personal_wechat-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/ContactMe.jpg)
+
+## ☕ Support project
+
+If this project is helpful to you, please feel free to:
+
+1. In case wall [user] (https://github.com/mlt131220/ES-3DEditor/issues/2) leave your usage scenario
+2. Scan code support developers:
+
+| AliPay                                                                      | WeChat                                                                     |
+|-----------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| <img src="https://upyun.astraljs.com/static/images/alipay.jpg" width="200"> | <img src="https://upyun.astraljs.com/static/images/wepay.jpg" width="200"> |
+
+## ⚖️ License agreement
+
+This project uses the **[Apache-2.0 License](LICENSE)** open source license, please comply with the following terms:
+
+- ✅ Allowed: personal learning, secondary development, non-commercial use
+- ⚠️ Authorization required: Commercial use
+- ❌ Do not use this item for any illegal purpose
+
+**[Full legal notice](LEGAL.md)** | **[Contribution guide](CONTRIBUTING.md)**
+
+## 🌟 Star trend
+
 [![Star History Chart](https://api.star-history.com/svg?repos=mlt131220/Astral3DEditor&type=Date)](https://star-history.com/#mlt131220/Astral3DEditor&Date)

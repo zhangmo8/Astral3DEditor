@@ -1,125 +1,105 @@
-# Astral 3D Editor
+# <img src="https://editor.astraljs.com/static/images/logo/logo.png" width="30" height="30"> Astral 3D Editor
 
-🌍
-*[English](README.en.md)*
-🌍
-*[简体中文](README.md)*
+🌍 [English](README.en.md) | 简体中文
 
-### 基于vue3与ThreeJs，具体查看[Doc](http://editor-doc.astraljs.com/)
+[![Online Demo](https://img.shields.io/badge/Online_Demo-Astral_3D_Editor-8732D7?style=for-the-badge&logo=google-chrome&logoColor=white)](https://editor.astraljs.com)
 
-<div style="text-align: center">
+> 基于 Vue3 + Three.js 的现代 Web 3D 编辑器
 
-![Static Badge](https://img.shields.io/badge/Vue-3.3.4-green)
-![Static Badge](https://img.shields.io/badge/NaiveUI-2.34.4-green)
-![Static Badge](https://img.shields.io/badge/ThreeJS-r170-8732D7)
-![Static Badge](https://img.shields.io/badge/Cesium-1.107.0-8732D7)
-![Static Badge](https://img.shields.io/badge/UnoCSS-0.46.5-8732D7)
-<br />
-![Static Badge](https://img.shields.io/badge/license-MIT-blue)
-
+<div align="center">
+  <img src="http://editor-doc.astraljs.com/images/home/industryDark.png" width="800" alt="Editor Preview">
 </div>
 
-***
+## 🚀 核心能力
 
-## 交流
-<img src="https://upyun.astraljs.com/static/images/WeChatGroup.jpg?t=20250216" width="500px">
+### 核心功能
+- ✅ 多格式支持：30+ 模型格式（GLTF/OBJ/FBX/GLB/RVT/IFC等）
+- ✅ BIM模型轻量化展示（RVT/IFC）
+- ✅ CAD图纸解析（DWG/DXF）
+- ✅ 场景分包存储与加载
+- ✅ WebSocket 多人协作
 
-点击[这里](https://upyun.astraljs.com/static/images/WeChatGroup.jpg)查看最新群邀请图片。
+### 扩展能力
+- 🧩 插件系统
+- 📜 脚本运行时
+- 💫 粒子系统
+- ❄️ 天气系统
+- ☁️ 云存储集成（又拍云 USS）
 
-***
+### 即将到来
+- 🚧 动画编辑器
+- 🚧 物理引擎支持
+- 🚧 WebGPU 支持
+- 🚧 数据组件（API/WebSocket）
+- 🚧 低代码数据大屏
 
-## 特性：
-- [x] 模型导入展示，支持OBJ、FBX、GLTF、GLB、RVT、IFC、SEA、3DM、3DS、3MF、AMF、DAE、DRC、PLY、SVG、JSON等30+格式;
-- [x] BIM模型（RVT、IFC）轻量化展示;
-- [x] CAD图纸（DWG、DXF）解析关联;
-- [x] 场景分包存储读取;
-- [x] WebSocket 协作;
-- [x] 又拍云 USS 存储;
-- [x] Golang + MySQL 后端支持;
-- [x] 运行脚本;
-- [x] 插件系统;
-- [ ] 动画编辑器;
-- [ ] 物理引擎支持;
-- [ ] 粒子系统支持;
-- [ ] WebGPU 支持;
-- [ ] 数据组件 (暂定支持：API接口、WebSocket，不支持：前端SQL、GraphQL);
-- [ ] VUE / React 组件支持;
-- [ ] 低代码数据大屏;
+## 🛠️ 技术栈
 
-[//]: # (## 工程结构)
-[//]: # (```)
-[//]: # (|-- .vscode                          // vscode配置文件)
-[//]: # (|-- build                            // 打包配置)
-[//]: # (|-- public )
-[//]: # (|   |-- library                      // 静态资源库)
-[//]: # (|   |-- release                      // 发布包模板         )
-[//]: # (|   |-- static                       // 项目静态资源)
-[//]: # (|   |-- logo.svg                     // Logo               )
-[//]: # (|-- src                              // 源码目录               )
-[//]: # (|   |-- cesium                       // cesium 场景相关)
-[//]: # (|   |-- components                   // 组件)
-[//]: # (|   |-- config                       // 项目各类配置)
-[//]: # (|   |-- core                         // 编辑器核心代码)
-[//]: # (|       |-- commands                 // 编辑器操作命令集合)
-[//]: # (|       |-- exporters                // 自定义模型导出器)
-[//]: # (|       |-- libs                     // 第三方相关js库)
-[//]: # (|   |-- hooks                        // 钩子函数)
-[//]: # (|   |-- http                         // 封装请求)
-[//]: # (|   |-- language                     // i18n 国际化配置文件夹)
-[//]: # (|   |-- router                       // 路由配置)
-[//]: # (|   |-- store                        // Pinia 状态管理)
-[//]: # (|   |-- utils                        // 全局公用函数目录    )
-[//]: # (|   |-- views                        // vue页面            )
-[//]: # (|   |-- App.vue                      // App入口文件)
-[//]: # (|   |-- main.ts                      // 程序入口文件 )
-[//]: # (|-- types                            // 全局类型定义目录 )
-[//]: # (|-- .env                             // 通用环境文件)
-[//]: # (|-- .env.development                 // 开发环境)
-[//]: # (|-- .env.production                  // 生产环境)
-[//]: # (|-- .gitignore                       // git ingnore)
-[//]: # (|-- index.html                       // 入口html文件)
-[//]: # (|-- package.json                     // 项目及工具的依赖配置文件)
-[//]: # (|-- README.md                        // README)
-[//]: # (|-- tsconfig.json                     // 指定了编译项目所需的根目录下的文件以及编译选项)
-[//]: # (|-- vite.config.ts                    // Vite配置文件)
-[//]: # (|-- yarn.lock                    )
-[//]: # (```)
+![Vue3](https://img.shields.io/badge/Vue-3.3.4-4FC08D?logo=vuedotjs)
+![Three.js](https://img.shields.io/badge/Three.js-r170-000000?logo=threedotjs)
+![Cesium](https://img.shields.io/badge/Cesium-1.107.0-0133B4?logo=cesium)
+![NaiveUI](https://img.shields.io/badge/Naive_UI-2.39.0-66C060?logo=vue.js)
+![UnoCSS](https://img.shields.io/badge/UnoCSS-0.46.5-333333?logo=unocss)
+![Go](https://img.shields.io/badge/Backend-Go_1.20-00ADD8?logo=go)
+![MIT License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
-## 后端
-* Go实现: [Astral3DEditorGoBack](https://github.com/mlt131220/ES3DEditorGoBack)
+## ⚡ 快速开始
 
-## 快速开始
-```shell
-   git clone https://github.com/mlt131220/Astral3DEditor.git
+### 前置需求
+- Node.js ≥ 18.x
+- Yarn
+
+### 本地运行
+```bash
+git clone https://github.com/mlt131220/Astral3DEditor.git
+cd Astral3DEditor
+yarn install
+yarn dev
 ```
 
-## 运行
-```shell
-    cd EAstral3DEditor
-    yarn install
-    yarn run dev
-```
-Tips:
-* `Node > 18.0.0`;
-* 内置后端默认连接`http://43.140.200.138:8080`,该后端仅供调试，不定期清空数据
+> 📢 提示：默认使用测试后端 `http://43.140.200.138:8080`（数据不定期清空）
 
-## 打包
-```shell
-    yarn run build
+### 生产构建
+```bash
+yarn build
 ```
 
-## 感谢 || 赞助🌹🌹🌹
-如果本项目帮助到了你，请在[这里](https://github.com/mlt131220/ES-3DEditor/issues/2)留下你的网址，让更多的人看到。您的回复将会是我继续更新维护下去的动力。 </br></br>
-本项目代码完全开源并且免费学习&使用，如果你开心并且想要打赏赞助，可扫描下方二维码：</br>
-<img src="https://upyun.astraljs.com/static/images/alipay.jpg" width="320px">
-<img src="https://upyun.astraljs.com/static/images/wepay.jpg" width="320px">
+## 📚 生态相关
 
-## 权益声明
-本项目基于Apache-2.0协议开源，任何人可以免费使用，但任何情况下，请不要用于商业用途,商用用途请联系作者获得授权。
+### 后端实现
+[![Go Backend](https://img.shields.io/badge/后端实现-Astral3DEditorGoBack-00ADD8?logo=go)](https://github.com/mlt131220/ES3DEditorGoBack)
 
-## 免责声明
-本项目仅供学习交流使用，请勿用于任何非法用途，否则后果自负。
-作者对使用本项目(原始项目或二次创作后)产生的任何问题不承担任何法律责任。
+### 文档中心
+[![Documentation](https://img.shields.io/badge/文档中心-Astral_Docs-8732D7?logo=gitbook)](http://editor-doc.astraljs.com/)
 
-## Star 历史
+## 💬 加入社区
+
+通过以下方式获取最新动态和技术支持：
+
+[![WeChat Group](https://img.shields.io/badge/微信交流群-扫码加入-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/WeChatGroup.jpg)
+[![Contact Author](https://img.shields.io/badge/联系作者-个人微信-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/ContactMe.jpg)
+
+## ☕ 支持项目
+
+如果本项目对您有帮助，欢迎：
+
+1. 在 [用户案例墙](https://github.com/mlt131220/ES-3DEditor/issues/2) 留下您的使用场景
+2. 扫码支持开发者：
+
+| 支付宝                                                                         | 微信支付                                                                       |
+|-----------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| <img src="https://upyun.astraljs.com/static/images/alipay.jpg" width="200"> | <img src="https://upyun.astraljs.com/static/images/wepay.jpg" width="200"> |
+
+## ⚖️ 许可协议
+
+本项目采用 **[Apache-2.0 License](LICENSE)** 开源协议，使用时请遵守以下条款：
+
+- ✅ 允许：个人学习、二次开发、非商业用途
+- ⚠️ 需要授权：商业用途
+- ❌ 禁止：将本项目用于非法用途
+
+**[完整法律声明](LEGAL.md)** | **[贡献指南](CONTRIBUTING.md)**
+
+## 🌟 Star 趋势
+
 [![Star History Chart](https://api.star-history.com/svg?repos=mlt131220/Astral3DEditor&type=Date)](https://star-history.com/#mlt131220/Astral3DEditor&Date)
