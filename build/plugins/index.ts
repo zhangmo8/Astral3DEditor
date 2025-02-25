@@ -2,7 +2,6 @@ import {type PluginOption} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import Unocss from 'unocss/vite';
 import cesium from 'vite-plugin-cesium';
-import {presetUno, presetAttributify, presetIcons} from 'unocss';
 import topLevelAwait from "vite-plugin-top-level-await";
 // 自动按需引入Naive UI组件
 import Components from 'unplugin-vue-components/vite'
@@ -26,12 +25,7 @@ interface Options {
 export async function createPlugins({isBuild,compress,enableAnalyze}: Options) {
     const vitePlugins: (PluginOption | PluginOption[])[] = [
         vue(),
-        Unocss({
-            presets: [
-                presetUno(),
-                presetAttributify(),
-                presetIcons()],
-        }),
+        Unocss(),
         cesium(),
         topLevelAwait({
             // 每个块模块的顶级await promise的导出名称
