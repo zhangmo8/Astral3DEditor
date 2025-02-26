@@ -439,9 +439,9 @@ class Editor {
 		this.scene.environment = null;
 		this.scene.fog = null;
 
-        this.scene.children.forEach(child => {
-            this.removeObject(child);
-        })
+        for (let i = this.scene.children.length - 1; i >= 0; i--) {
+            this.removeObject(this.scene.children[i]);
+        }
 
 		this.geometries = {};
 		this.materials = {};

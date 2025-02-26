@@ -72,49 +72,54 @@ onMounted(() => {
 </script>
 
 <template>
-  <n-infinite-scroll class="project-cards-list p-2" :distance="10" @load="handleLoad">
-    <n-card embedded hoverable :bordered="false" content-class="!p-2" class="cursor-pointer" @click="showCreateModal = true">
-      <div class="new-container h-full min-h-200px flex flex-col justify-center items-center b-1 b-dashed b-rd-1">
-        <span class="text-16 color-#fff">🫵</span>
-        <p>{{ t('home.New project') }}</p>
-      </div>
-    </n-card>
+    <n-infinite-scroll class="project-cards-list p-2" :distance="10" @load="handleLoad">
+        <n-card embedded hoverable :bordered="false" content-class="!p-2" class="cursor-pointer"
+            @click="showCreateModal = true">
+            <div class="new-container h-full min-h-200px flex flex-col justify-center items-center b-1 b-dashed b-rd-1">
+                <span class="text-16 color-#fff">🫵</span>
+                <p>{{ t('home.New project') }}</p>
+            </div>
+        </n-card>
 
-    <n-card hoverable v-for="project in data" :key="project.id" >
-      <template #cover>
-        <n-skeleton v-if="loadingProjectId === project.id" height="100%" width="100%" />
-        <template v-else>
-          <div class="absolute top-10px right-10px z-10">
-            <n-tag type="success" :bordered="false" >
-              {{ project.projectType === 0 ? "Web3D" : "WebGIS" }}
-            </n-tag>
-            <n-tag type="success" :bordered="false" class="ml-5px">
-              {{ project.sceneType }}
-            </n-tag>
-          </div>
+        <n-card hoverable v-for="project in data" :key="project.id">
+            <template #cover>
+                <n-skeleton v-if="loadingProjectId === project.id" height="100%" width="100%" />
+                <template v-else>
+                    <div class="absolute top-10px right-10px z-10">
+                        <n-tag type="success" :bordered="false">
+                            {{ project.projectType === 0 ? "Web3D" : "WebGIS" }}
+                        </n-tag>
+                        <n-tag type="success" :bordered="false" class="ml-5px">
+                            {{ project.sceneType }}
+                        </n-tag>
+                    </div>
 
-          <img :src="project.coverPicture || '/static/images/carousel/Astral3DEditor.png'" class="h-full cursor-pointer hover:transform-scale-140 transition-all-200" @click="editScene(project.id)">
-        </template>
-      </template>
+                    <n-image preview-disabled object-fit="cover"
+                        :src="project.coverPicture || '/static/images/carousel/Astral3DEditor.png'"
+                        class="w-full h-220px cursor-pointer hover:transform-scale-140 transition-all-200"
+                        @click="editScene(project.id)" />
+                </template>
+            </template>
 
-      <template #action>
-        <n-skeleton v-if="loadingProjectId === project.id" text :repeat="1" />
-        <CardAction v-show="loadingProjectId !== project.id" :data="project" @refresh="refresh" @setLoadingProjectId="setLoadingProjectId" />
-      </template>
-    </n-card>
+            <template #action>
+                <n-skeleton v-if="loadingProjectId === project.id" text :repeat="1" />
+                <CardAction v-show="loadingProjectId !== project.id" :data="project" @refresh="refresh"
+                    @setLoadingProjectId="setLoadingProjectId" />
+            </template>
+        </n-card>
 
-    <div v-if="loadMore" class="text-center" style="grid-column: 1 / -1;">
-      {{ t('home.Loading') }}...
-    </div>
-    <div v-else-if="!noMore" class="text-center" style="grid-column: 1 / -1;">
-      {{ t('home.Scroll to load more') }} 😽😽😽
-    </div>
-    <div v-else class="text-center" style="grid-column: 1 / -1;">
-      {{ t('home.No more') }} 🤪
-    </div>
-  </n-infinite-scroll>
+        <div v-if="loadMore" class="text-center" style="grid-column: 1 / -1;">
+            {{ t('home.Loading') }}...
+        </div>
+        <div v-else-if="!noMore" class="text-center" style="grid-column: 1 / -1;">
+            {{ t('home.Scroll to load more') }} 😽😽😽
+        </div>
+        <div v-else class="text-center" style="grid-column: 1 / -1;">
+            {{ t('home.No more') }} 🤪
+        </div>
+    </n-infinite-scroll>
 
-  <CreateProject v-model:visible="showCreateModal" @refresh="refresh" />
+    <CreateProject v-model:visible="showCreateModal" @refresh="refresh" />
 </template>
 
 <style lang="less">
@@ -133,7 +138,7 @@ onMounted(() => {
     }
 
     .n-card-cover{
-      height: 100%;
+        height: 220px;
     }
   }
 }
