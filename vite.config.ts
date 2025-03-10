@@ -60,10 +60,13 @@ export default defineConfig(async ({mode, command}) => {
             port: VITE_PORT,
             //设置 server.hmr.overlay 为 false 可以禁用开发服务器错误的屏蔽
             // hmr: { overlay: false },
-            // 解决 ffmpeg 报错 SharedArrayBuffer is not defined
             headers: {
-                'Cross-Origin-Embedder-Policy': 'require-corp',
-                'Cross-Origin-Opener-Policy': 'same-origin',
+                'Cross-Origin-Embedder-Policy': 'unsafe-none"',
+                'Cross-Origin-Opener-Policy': 'unsafe-none',
+            },
+            cors: {
+                origin: "*", 
+                credentials: true
             },
             proxy: {
                 '^/api': {

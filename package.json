@@ -13,8 +13,6 @@
   "dependencies": {
     "@ant-design/colors": "^7.0.2",
     "@dxfom/mtext": "0.3.2",
-    "@ffmpeg/core": "^0.11.0",
-    "@ffmpeg/ffmpeg": "^0.11.5",
     "@monaco-editor/loader": "^1.4.0",
     "@vicons/carbon": "^0.12.0",
     "@vicons/fa": "^0.12.0",
