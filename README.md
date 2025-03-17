@@ -10,6 +10,13 @@
   <img src="http://editor-doc.astraljs.com/images/home/industryDark.png" width="800" alt="Editor Preview">
 </div>
 
+## 💬 加入社区
+
+通过以下方式获取最新动态和技术支持：
+
+[![WeChat Group](https://img.shields.io/badge/微信交流群-扫码加入-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/WeChatGroup.jpg)
+[![Contact Author](https://img.shields.io/badge/联系作者-个人微信-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/ContactMe.jpg)
+
 ## 🚀 核心能力
 
 ### 核心功能
@@ -54,14 +61,14 @@
 git clone https://github.com/mlt131220/Astral3DEditor.git
 cd Astral3DEditor
 yarn install
-yarn dev
+yarn run dev
 ```
 
 > 📢 提示：默认使用测试后端 `http://43.140.200.138:8080`（数据不定期清空）
 
 ### 生产构建
 ```bash
-yarn build
+yarn run build
 ```
 
 ## 📚 生态相关
@@ -71,13 +78,6 @@ yarn build
 
 ### 文档中心
 [![Documentation](https://img.shields.io/badge/文档中心-Astral_Docs-8732D7?logo=gitbook)](http://editor-doc.astraljs.com/)
-
-## 💬 加入社区
-
-通过以下方式获取最新动态和技术支持：
-
-[![WeChat Group](https://img.shields.io/badge/微信交流群-扫码加入-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/WeChatGroup.jpg)
-[![Contact Author](https://img.shields.io/badge/联系作者-个人微信-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/ContactMe.jpg)
 
 ## ☕ 支持项目
 

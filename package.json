@@ -1,6 +1,6 @@
 {
-  "name": "es-3d-editor",
-  "author": "ErSan",
+  "name": "astral-3d-editor",
+  "author": "ErSan <mlt131220@163.com>",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -55,7 +55,7 @@
     "unplugin-config": "^0.1.3",
     "unplugin-vue-components": "^0.27.3",
     "vite": "5.0.12",
-    "vite-plugin-cesium": "^1.2.22",
+    "vite-plugin-cesium": "1.2.22",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-enhance-log": "^0.6.2",
     "vite-plugin-top-level-await": "^1.3.1"
