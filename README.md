@@ -7,7 +7,8 @@
 > 基于 Vue3 + Three.js 的现代 Web 3D 编辑器
 
 <div align="center">
-  <img src="http://editor-doc.astraljs.com/images/home/industryDark.png" width="800" alt="Editor Preview">
+  <img src="http://editor-doc.astraljs.com/images/home/thumbnailDark.png?t=20250318" width="800" alt="Editor Preview">
+  <img src="http://editor-doc.astraljs.com/images/home/industryDark.png?t=20250318" width="800" alt="Editor Preview">
 </div>
 
 ## 💬 加入社区

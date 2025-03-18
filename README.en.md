@@ -7,6 +7,7 @@
 > Modern Web 3D editor based on Vue3 + Three.js
 
 <div align="center">
+  <img src="http://editor-doc.astraljs.com/images/home/thumbnailDark.png" width="800" alt="Editor Preview">
   <img src="http://editor-doc.astraljs.com/images/home/industryDark.png" width="800" alt="Editor Preview">
 </div>
 
