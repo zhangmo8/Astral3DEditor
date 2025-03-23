@@ -6,7 +6,8 @@ import {t} from "@/language";
 import {useAddSignal, useRemoveSignal} from "@/hooks/useSignal";
 import {escapeHTML, findSiblingsAndIndex} from "@/utils/common/utils";
 import {getMaterialName} from "@/utils/common/scenes";
-import {MoveObjectCommand} from "@/core/commands/Commands"
+import { MoveObjectCommand, RemoveObjectCommand, AddObjectCommand } from "@/core/commands/Commands";
+import EsContextmenu from "@/components/es/EsContextmenu.vue";
 
 const sceneTreeRef = ref();
 const pattern = ref("");
@@ -227,6 +228,59 @@ function handlerTreeSelectChange(keys: Array<number>, option: Array<TreeOption>,
     window.editor.deselect();
   }
 }
+
+// 场景树节点点击事件，主要用于配合右键菜单
+function nodeProps({ option }: { option: TreeOption }) {
+  return {
+    onContextmenu(e: MouseEvent): void {
+      e.preventDefault();
+      if([window.editor.camera.id,window.editor.scene.id].includes(option.key)) return;
+
+      contextmenuRef.value?.show(e.clientX, e.clientY);
+
+      contextmenuTreeOption.value = option;
+    }
+  }
+}
+
+/* 右键菜单 */
+const contextmenuRef = ref();
+const contextmenuOptions = [
+  {
+    label: t("other.Focus"),
+    key: 'focus'
+  },
+  {
+    label: t("home.Delete"),
+    key: 'delete'
+  },
+  {
+    label: t("layout.header.Clone"),
+    key: 'clone'
+  }
+];
+const contextmenuTreeOption = ref<TreeOption | null>(null);
+
+function handleContextmenuSelect(key: string) {
+  if (!contextmenuTreeOption) return;
+
+  const object = window.editor.scene.getObjectById(contextmenuTreeOption.value?.key as number);
+
+  switch (key) {
+    case "focus":
+      window.editor.focus(object);
+      break;
+    case "delete":
+      const parent = object.parent;
+      if (parent !== null) window.editor.execute(new RemoveObjectCommand(object));
+      break;
+    case "clone":
+      const _object = object.clone();
+
+      window.editor.execute(new AddObjectCommand(_object));
+      break;
+  }
+}
 </script>
 
 <template>
@@ -239,10 +293,14 @@ function handlerTreeSelectChange(keys: Array<number>, option: Array<TreeOption>,
           v-model:expanded-keys="sceneTreeExpandedKeys"
           draggable
           :allow-drop="allowDrop"
+          :node-props="nodeProps"
           @drop="handleSceneTreeDrop"
           @update:selected-keys="handlerTreeSelectChange"
           block-line virtual-scroll
   />
+
+  <EsContextmenu ref="contextmenuRef" placement="right-start" trigger="manual" size="small"
+                 :options="contextmenuOptions" @select="handleContextmenuSelect" />
 </template>
 
 <style lang="less" scoped>

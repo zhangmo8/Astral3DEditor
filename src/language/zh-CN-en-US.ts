@@ -405,7 +405,8 @@ export default {
 		Close:"关闭",
 		Enable:"启用",
 		'Query failed':"查询失败",
-		'Related document':"相关文档"
+		'Related document':"相关文档",
+		Focus:"聚焦",
 	},
 	/* 提示 */
 	prompt: {
