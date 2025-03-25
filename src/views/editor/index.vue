@@ -6,6 +6,7 @@ import {useDispatchSignal} from "@/hooks/useSignal";
 import {useSceneInfoStore} from "@/store/modules/sceneInfo";
 import {t} from "@/language";
 import {fetchGetOneScene} from "@/http/api/scenes";
+import {connectWebSocket} from "@/hooks/useWebSocket";
 import EsCubeLoading from "@/components/es/EsCubeLoading.vue";
 
 const sceneInfoStore = useSceneInfoStore();
@@ -69,6 +70,9 @@ function getScene(sceneInfo) {
 }
 
 onMounted(() => {
+  // 启动websocket连接
+  connectWebSocket(import.meta.env.VITE_GLOB_SOCKET_URL);
+
   init();
 })
 </script>
