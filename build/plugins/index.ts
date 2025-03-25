@@ -11,6 +11,7 @@ import EnhanceLog from 'vite-plugin-enhance-log';
 import {createConfigPluginConfig} from "./appConfig";
 import {configCompressPlugin} from "./compress";
 import {configVisualizerConfig} from "./visualizer";
+import { configPwaPlugin } from './pwa';
 
 interface Options {
     isBuild: boolean;
@@ -42,7 +43,9 @@ export async function createPlugins({isBuild,compress,enableAnalyze}: Options) {
             splitBy: '\n',
             preTip: '🚀🚀🚀🚀🚀🚀',
             enableFileName: { enableDir: false}
-        })
+        }),
+        // PWA
+        configPwaPlugin(),
     ];
 
     const appConfigPlugin = await createConfigPluginConfig(isBuild);

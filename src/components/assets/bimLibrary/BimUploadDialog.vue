@@ -86,7 +86,6 @@ import {reactive, ref} from "vue";
 import {NotificationReactive} from "naive-ui";
 import {t} from "@/language";
 import {ArchiveOutline, CaretForwardOutline} from "@vicons/ionicons5";
-import {demoEnv} from "@/utils/common/constant";
 import {fetchUpload} from "@/http/api/sys";
 import {fetchAddBim2Gltf, fetchUploadRvt} from "@/http/api/bim";
 import {NEED_CONVERT_MODEL} from "@/utils/common/constant";
@@ -184,7 +183,7 @@ let wsNotice: null | NotificationReactive = null;
 const getNotice = () => wsNotice;
 // 提交
 function submit(e) {
-  if (demoEnv) {
+  if (import.meta.env.PROD) {
     window.$message?.error(window.$t("prompt['Disable this function in the demonstration environment!']"));
     return;
   }

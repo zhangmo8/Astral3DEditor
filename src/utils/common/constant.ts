@@ -41,8 +41,6 @@ export const NEED_CONVERT_DRAWING = ["dwg"];
 // 支持的文档类型
 export const DOC_SUPPORT_TYPE = ["doc","docx","xls","xlsx","xlsm","ppt",'pptx',"pdf","txt"];
 
-export const demoEnv:boolean = import.meta.env.VITE_GLOB_DEMO_ENV === 'true';
-
 export const TYPED_ARRAYS = {
     Int8Array: Int8Array,
     Uint8Array: Uint8Array,

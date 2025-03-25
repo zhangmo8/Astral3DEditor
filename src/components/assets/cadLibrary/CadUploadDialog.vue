@@ -40,7 +40,6 @@ import {ArchiveOutline} from "@vicons/ionicons5";
 import {fetchUpload} from "@/http/api/sys";
 import {DRAWING_SUPPORT_TYPE, NEED_CONVERT_DRAWING} from "@/utils/common/constant";
 import {fetchAddDwg2dxf} from "@/http/api/cad";
-import {demoEnv} from "@/utils/common/constant";
 
 withDefaults(defineProps<{
   show:boolean
@@ -114,11 +113,6 @@ let notice: null | NotificationReactive = null;
 const getNotice = () => notice;
 // 提交
 function submit(e) {
-  // if (demoEnv) {
-  //   window.$message?.error(window.$t("prompt['Disable this function in the demonstration environment!']"));
-  //   return;
-  // }
-
   e.preventDefault();
   formRef.value?.validate(async (errors) => {
     if (!errors) {
