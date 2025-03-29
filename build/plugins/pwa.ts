@@ -16,6 +16,10 @@ export function configPwaPlugin(): PluginOption {
         workbox: {
             // sw 预缓存的资源类型
             globPatterns: ['**/*.{js,css,html,ico,png,svg,json,jpg,jpeg}'],
+            // Error:  Configure "workbox.maximumFileSizeToCacheInBytes" to change the limit: the default value is 2 MiB.
+            // 添加此项配置，增加需要缓存的最大文件大小,默认2MB
+            // 但是 cesium/Cesium.js is 5.14 MB
+            maximumFileSizeToCacheInBytes: 6 * 1024 * 1024
         },
         manifest: {
             name: 'Astral 3D Editor',
