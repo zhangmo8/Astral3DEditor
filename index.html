@@ -50,6 +50,11 @@
             return false;
         }
     }
+
+    // 禁止浏览器默认右键菜单
+    document.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+    });
 </script>
 </body>
 </html>
