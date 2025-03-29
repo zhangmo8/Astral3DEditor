@@ -109,6 +109,7 @@ declare interface ISceneJson {
         }
     },
     "scene": {
+        "uuid": string,
         "metadata": {
             "version": number,
             "type": "Object",
@@ -129,7 +130,8 @@ declare interface ISceneJson {
             "environmentRotation": [number,number,number,string],
             "children": Array<string>
         },
-        "uuid": string
+        "geometries"?: Array<any>,
+        groupChildren?: Array<string>
     },
     "scripts": {
         [uuid:string]: [
@@ -140,10 +142,15 @@ declare interface ISceneJson {
         ]
     },
     "controls": {
-        target?:import("three").Vector3
+        state: string
     },
     "totalZipNumber": number,
-    "sceneInfo": ISceneFetchData
+    "sceneInfo": ISceneFetchData,
+    drawingInfo?: {
+        imgSrc: string;
+        markList: any[];
+        imgInfo: {};
+    }
 }
 
 declare interface IFromJSONResult {

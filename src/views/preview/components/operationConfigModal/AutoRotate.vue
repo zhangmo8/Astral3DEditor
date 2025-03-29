@@ -1,30 +1,21 @@
 <script setup lang="ts">
-import { onMounted,onBeforeUnmount,ref } from 'vue';
-import {useAddSignal,useRemoveSignal} from "@/hooks/useSignal";
+import { ref, watch } from 'vue';
 import {t} from "@/language";
+import { usePreviewOperationStore } from "@/store/modules/previewOperation";
+
+const operationStore = usePreviewOperationStore();
 
 const showModal = ref(false);
-const autoRotateSpeed = ref(2);
 
-function handleConfig(isShow:boolean,speed:number){
-  showModal.value = isShow;
-  autoRotateSpeed.value = speed;
-}
+watch(() => operationStore.menuList.autoRotate.active, (newVal) => {
+  if(newVal){
+    showModal.value = true;
+  }
+})
 
 function handleClose(){
   showModal.value = false;
 }
-
-function handleDragEnd(){
-  window.viewer.modules.controls.autoRotateSpeed = autoRotateSpeed.value;
-}
-
-onMounted(() => {
-  useAddSignal("autoRotateConfigModal",handleConfig)
-});
-onBeforeUnmount(() => {
-  useRemoveSignal("autoRotateConfigModal",handleConfig)
-})
 </script>
 
 <template>
@@ -34,8 +25,8 @@ onBeforeUnmount(() => {
     }">
     <div class="flex w-full">
       <span class="w-30%">{{ t("preview.Rotational speed") }}</span>
-      <n-slider v-model:value="autoRotateSpeed" show-tooltip :step="1" :min="1" :max="10"
-                @dragend="handleDragEnd" class="w-70%" />
+      <n-slider v-model:value="operationStore.autoRotateSpeed" show-tooltip :step="1" :min="1" :max="100"
+                class="w-70%" />
     </div>
   </n-card>
 </template>

@@ -20,15 +20,13 @@ let objectSelectedFn;
 /**
  * 盒剖切
  * @param viewport
- * @param domElement
+ * @param controls
  */
 export class ClippedEdgesBox {
     // 最小剖切盒宽度
     static MIN_WIDTH = 0.05;
 
-    protected scene;
-    protected camera;
-    protected domElement;
+    private viewport: any;
     protected controls;
 
     public isOpen: boolean = false;
@@ -36,12 +34,14 @@ export class ClippedEdgesBox {
     protected lastSelected = undefined;
 
     constructor(viewport, controls) {
-        this.scene = viewport.scene;
-        this.camera = viewport.camera;
-        this.domElement = viewport.renderer.domElement;
+        this.viewport = viewport;
         this.controls = controls;
 
         objectSelectedFn = this.objectSelected.bind(this);
+    }
+
+    get domElement(){
+        return this.viewport.renderer.domElement;
     }
 
     /**
@@ -52,7 +52,7 @@ export class ClippedEdgesBox {
 
         if (!window.editor.selected) {
             this.lastSelected = undefined;
-            this.sectionBox.expandByObject(this.scene)
+            this.sectionBox.expandByObject(this.viewport.scene)
         } else {
             this.lastSelected = window.editor.selected;
             this.sectionBox?.expandByObject(window.editor.selected)
@@ -139,7 +139,7 @@ export class ClippedEdgesBox {
         this.initOrUpdateVertices();
         this.initOrUpdateFaces();
         this.initOrUpdateLines();
-        this.scene.add(this.group);
+        this.viewport.scene.add(this.group);
     }
 
     /**
@@ -164,7 +164,7 @@ export class ClippedEdgesBox {
         }
 
         if (!this.lastSelected) {
-            this.scene.traverseVisible(c => {
+            this.viewport.scene.traverseVisible(c => {
                 setChildClippingPlanes(c)
             })
         } else {
@@ -278,7 +278,7 @@ export class ClippedEdgesBox {
      * 清除剖切盒
      */
     protected clearSectionBox() {
-        this.scene.remove(this.group);
+        this.viewport.scene.remove(this.group);
         this.domElement.style.cursor = "";
         this.faces = [];
         this.lines = [];
@@ -290,7 +290,7 @@ export class ClippedEdgesBox {
         }
 
         if (!this.lastSelected) {
-            this.scene.traverseVisible(c => {
+            this.viewport.scene.traverseVisible(c => {
                 setChildClippingPlanes(c);
             })
         } else {
@@ -327,7 +327,7 @@ export class ClippedEdgesBox {
     protected updateMouseAndRay(event: MouseEvent) {
         this.mousePosition.setX((event.offsetX / this.domElement.offsetWidth) * 2 - 1);
         this.mousePosition.setY(-(event.offsetY / this.domElement.offsetHeight) * 2 + 1);
-        this.raycaster.setFromCamera(this.mousePosition, this.camera);
+        this.raycaster.setFromCamera(this.mousePosition, this.viewport.camera);
     }
 
     /**
@@ -387,9 +387,7 @@ export class ClippedEdgesBox {
             this.drag.axis = axis;
             this.drag.point = point;
             this.drag.initGround();
-            this.controls.enablePan = false;
-            this.controls.enableZoom = false;
-            this.controls.enableRotate = false;
+            this.controls.enabled = false;
             this.domElement.style.cursor = "move";
 
             this.domElement.removeEventListener("pointermove", this.onMouseMove);
@@ -397,10 +395,8 @@ export class ClippedEdgesBox {
             this.domElement.addEventListener("pointerup", this.drag.mouseup);
         },
         end: () => {
-            this.scene.remove(this.drag.ground);
-            this.controls.enablePan = true;
-            this.controls.enableZoom = true;
-            this.controls.enableRotate = true;
+            this.viewport.scene.remove(this.drag.ground);
+            this.controls.enabled = true;
             this.domElement.removeEventListener("pointermove", this.drag.mousemove);
             this.domElement.removeEventListener("pointerup", this.drag.mouseup);
             this.domElement.addEventListener("pointermove", this.onMouseMove);
@@ -433,11 +429,11 @@ export class ClippedEdgesBox {
                 this.drag.point.setZ(0);
             }
             this.drag.ground.position.copy(this.drag.point);
-            const newNormal = this.camera.position.clone()
-                .sub(this.camera.position.clone().projectOnVector(normals[this.drag.axis]))
+            const newNormal = this.viewport.camera.position.clone()
+                .sub(this.viewport.camera.position.clone().projectOnVector(normals[this.drag.axis]))
                 .add(this.drag.point); // 得到平面的法线
             this.drag.ground.lookAt(newNormal);
-            this.scene.add(this.drag.ground);
+            this.viewport.scene.add(this.drag.ground);
         },
         // 更新裁剪盒子的位置
         updateSectionBox: (point: Vector3) => {

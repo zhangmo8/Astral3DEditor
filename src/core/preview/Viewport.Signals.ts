@@ -54,8 +54,28 @@ export class ViewportSignals {
             }
 
             // 相机飞行
-            this.viewport.flyToMesh(object, 800)
+            this.objectFocused(object)
         }
+    }
+
+    /**
+     * 聚焦模型
+     * @param object
+     */
+    objectFocused(object) {
+        const box3 = new THREE.Box3();
+        box3.setFromObject(object);
+
+        if (box3.isEmpty()) {
+            box3.set(new THREE.Vector3(object.position.x - 1, object.position.y - 1, object.position.z - 1), new THREE.Vector3(object.position.x + 1, object.position.y + 1, object.position.z + 1));
+        }
+        this.viewport.modules.controls.fitToBox(box3, true,{
+            cover:false,
+            paddingTop:3,
+            paddingBottom:3,
+            paddingLeft:3,
+            paddingRight:3,
+        });
     }
 
     sceneResize() {

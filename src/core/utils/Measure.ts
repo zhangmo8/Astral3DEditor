@@ -636,6 +636,8 @@ export default class Measure {
         if (this.mode === MeasureMode.Angle && this.pointArray.length % 3 === 0) {
             this.complete();
         }
+
+        useDispatchSignal("sceneGraphChanged");
     };
 
     keydown = (e: KeyboardEvent) => {

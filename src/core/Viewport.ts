@@ -12,10 +12,8 @@ import {ViewportEffect} from "@/core/Viewport.Effect";
 import ViewCube from "@/core/Viewport.Cube";
 import {XR} from '@/core/Viewport.XR';
 import {ViewportSignals} from "@/core/Viewport.Signals";
-import {TweenManger} from "@/core/utils/TweenManager";
 import {ShaderMaterialManager} from "@/core/shaderMaterial/ShaderMaterialManager";
 import {Package} from "@/core/loader/Package";
-import FlyTo from "@/core/utils/FlyTo";
 
 CameraControls.install({
     THREE: {
@@ -65,9 +63,7 @@ export class Viewport {
         transformControls: TransformControls,
         effect:ViewportEffect,
         viewCube: ViewCube,
-        fly: FlyTo,
         package: Package,
-        tweenManager: TweenManger,
         registerSignal: ViewportSignals,
         shaderMaterialManager: ShaderMaterialManager
     };
@@ -238,12 +234,7 @@ export class Viewport {
             transformControls,
             effect:new ViewportEffect(this),
             viewCube: new ViewCube(this.camera, this.container, controls),
-            // viewHelper,
-            // 相机飞行
-            fly: new FlyTo(this.camera, controls),
             package: new Package(),
-            // 补间动画
-            tweenManager: new TweenManger(),
             // 注册signal
             registerSignal: new ViewportSignals(this),
             shaderMaterialManager: new ShaderMaterialManager()
@@ -356,8 +347,6 @@ export class Viewport {
     }
 
     animate() {
-        this.modules.tweenManager?.update();
-
         const mixer = window.editor.mixer;
         const delta = clock.getDelta();
 

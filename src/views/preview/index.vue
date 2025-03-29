@@ -98,10 +98,9 @@ function getScene(sceneInfo) {
   window.viewer.modules.package.unpack({
     url: sceneInfo.zip,
     onSceneLoad: (sceneJson: ISceneJson, configJson: IConfigJson, fromJSONResult: IFromJSONResult) => {
-      //20250213：方法好似多余，viewport通过projectConfigStore设置了，运行三个月无误后删除
-      //   window.viewer.load(configJson);
-
-      window.viewer.modules.operation.initCamera = fromJSONResult.initCamera;
+      if (sceneJson.controls?.state) {
+        window.viewer.modules.operation.initControlsState = sceneJson.controls.state;
+      }
 
       useDispatchSignal("sceneResize");
     },
@@ -134,17 +133,6 @@ function getScene(sceneInfo) {
     }
   })
   return;
-}
-
-//监听视窗变化（节流）
-let timer: NodeJS.Timeout | null = null;
-
-function onViewPortResize(width: number, height: number) {
-  if (timer) return;
-  timer = setTimeout(function () {
-    useDispatchSignal("sceneResize", width, height);
-    timer = null;
-  }, 10)
 }
 </script>
 

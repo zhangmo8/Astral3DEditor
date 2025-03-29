@@ -5,22 +5,19 @@
  * @description 预览
  */
 import * as THREE from "three";
-import TWEEN from "@tweenjs/tween.js";
+import CameraControls from 'camera-controls';
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
 // import WebGPURenderer from "three/examples/jsm/renderers/webgpu/WebGPURenderer";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { XRButton } from "three/examples/jsm/webxr/XRButton";
-import { useAddSignal, useDispatchSignal } from "@/hooks/useSignal";
+import { useDispatchSignal } from "@/hooks/useSignal";
 import { XR } from "@/core/Viewport.XR";
 import ViewCube from "@/core/Viewport.Cube";
 import { Package } from "@/core/loader/Package";
-import { TweenManger } from "@/core/utils/TweenManager";
 import { ShaderMaterialManager } from "@/core/shaderMaterial/ShaderMaterialManager";
 import Helper from "@/core/script/Helper";
 import { ViewportSignals } from "@/core/preview/Viewport.Signals";
 import { ViewportOperation } from "@/core/preview/Viewport.Operation";
 import { getMousePosition } from "@/utils/common/scenes";
-import FlyTo from "@/core/utils/FlyTo";
 import { ClippedEdgesBox } from "@/core/utils/ClippedEdgesBox";
 import EsDragControls from "@/core/controls/EsDragControls";
 import Measure, { MeasureMode } from "@/core/utils/Measure";
@@ -28,6 +25,23 @@ import { MiniMap } from "@/core/utils/MiniMap";
 import Roaming from "@/core/utils/Roaming";
 import { useProjectConfigStoreWithOut } from "@/store/modules/projectConfig";
 import { ViewportEffect } from "@/core/Viewport.Effect";
+import { usePreviewOperationStoreWithOut } from "@/store/modules/previewOperation";
+
+CameraControls.install({
+    THREE: {
+        Vector2: THREE.Vector2,
+        Vector3: THREE.Vector3,
+        Vector4: THREE.Vector4,
+        Quaternion: THREE.Quaternion,
+        Matrix4: THREE.Matrix4,
+        Spherical: THREE.Spherical,
+        Box3: THREE.Box3,
+        Sphere: THREE.Sphere,
+        Raycaster: THREE.Raycaster,
+    }
+});
+
+const operationStore = usePreviewOperationStoreWithOut();
 
 const onDownPosition = new THREE.Vector2();
 const onUpPosition = new THREE.Vector2();
@@ -69,15 +83,13 @@ export class Viewport {
 
     modules: {
         xr: XR,
-        controls: OrbitControls,
+        controls: CameraControls,
         dragControl: EsDragControls,
         effect: ViewportEffect,
         viewCube: ViewCube,
         package: Package,
-        tweenManager: TweenManger,
         shaderMaterialManager: ShaderMaterialManager,
         operation: ViewportOperation,
-        fly: FlyTo,
         registerSignal: ViewportSignals,
         clippedEdges: ClippedEdgesBox,
         measure: Measure,
@@ -120,8 +132,6 @@ export class Viewport {
         this.modules = this.initModules();
 
         this.initEvent();
-
-        this.loadDefaultEnvAndBackground();
     }
 
     initEngine() {
@@ -178,10 +188,8 @@ export class Viewport {
 
         modules.xr = new XR(modules.transformControls);
 
-        modules.controls = new OrbitControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement);
-        modules.controls.enableDamping = true;
-        modules.controls.dampingFactor = 0.05;
-        modules.controls.addEventListener("change", () => {
+        modules.controls = new CameraControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement);
+        modules.controls.addEventListener("update", () => {
             if (!this.modules.roaming || !this.modules.roaming.isRoaming) {
                 requestIdleCallback(() => {
                     this.render();
@@ -189,22 +197,11 @@ export class Viewport {
             } else {
                 if (!this.modules.roaming.person) return;
                 // 漫游模式下,玩家跟随旋转
-                this.modules.roaming.person.rotation.y = this.modules.controls.getAzimuthalAngle() + Math.PI;
-                //this.modules["roaming"].player.quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), this.modules["orbit"].getAzimuthalAngle() + Math.PI);
+                this.modules.roaming.person.rotation.y = this.modules.controls.azimuthAngle + Math.PI;
             }
+
+            useDispatchSignal("cameraChanged", this.camera);
         });
-        // 添加两个方法，在Weather->Rain中用到
-        // 因为编辑器中controls使用的不是OrbitControls造成差异
-        modules.controls.getPosition = (v3: THREE.Vector3) => {
-            v3.copy(modules.controls.object.position);
-
-            return v3;
-        }
-        modules.controls.getTarget = (v3: THREE.Vector3) => {
-            v3.copy(modules.controls.target);
-
-            return v3;
-        }
 
         // 后处理
         modules.effect = new ViewportEffect(this);
@@ -219,12 +216,6 @@ export class Viewport {
         modules.viewCube = new ViewCube(this.camera, this.container, modules.controls);
 
         modules.package = new Package();
-
-        // 补间动画
-        modules.tweenManager = new TweenManger();
-
-        // 相机飞行
-        modules.fly = new FlyTo(this.camera, modules.controls);
 
         modules.shaderMaterialManager = new ShaderMaterialManager();
 
@@ -255,34 +246,6 @@ export class Viewport {
     }
 
     initEvent() {
-        useAddSignal("rendererConfigUpdate", () => {
-            // if(this.renderer){
-            //     this.renderer.setAnimationLoop(null);
-            //     this.renderer.dispose();
-            //
-            //     this.modules.controls.disconnect();
-            //     this.container.removeChild(this.renderer.domElement);
-            // }
-            //
-            // this.renderer = this.initEngine();
-            // // 初始化后处理
-            // if(this.modules.effect.enabled){
-            //     this.modules.effect.createComposer();
-            // }
-            //
-            // animateFn = this.animation.bind(this);
-            // this.renderer.setAnimationLoop(animateFn);
-            //
-            // // 控制器绑定
-            // this.modules.controls.domElement = this.renderer.domElement;
-            // this.modules.controls.connect();
-            //
-            // // 替换拖拽控制器dom
-            // this.modules.dragControl.domElement = this.renderer.domElement;
-            //
-            // this.render();
-        });
-
         onKeyDownFn = this.onKeyDown.bind(this);
         onKeyUpFn = this.onKeyUp.bind(this);
         onPointerDownFn = this.onPointerDown.bind(this);
@@ -291,88 +254,6 @@ export class Viewport {
 
         animateFn = this.animation.bind(this);
         this.renderer.setAnimationLoop(animateFn);
-    }
-
-    /**
-     * 加载环境和背景
-     * @param definition 分辨率
-     */
-    loadDefaultEnvAndBackground(definition = 1) {
-        window.editor.resource.loadURLTexture(`/upyun/assets/texture/hdr/kloofendal_48d_partly_cloudy_puresky_${definition}k.hdr`, (texture) => {
-            texture.mapping = THREE.EquirectangularReflectionMapping;
-            if (this.scene) {
-                this.scene.environment = texture;
-                this.scene.background = texture;
-            }
-        })
-    }
-
-    /**
-     * orbitControls飞行至Camera位置
-     */
-    flyToCamera(initCamera: THREE.PerspectiveCamera, runTime: number, done = () => {
-    }) {
-        //设置相机的位置为与目标正面且距离distance的地方
-        const cameraToTarget = new TWEEN.Tween(this.camera.position);
-        cameraToTarget.to(initCamera.position, runTime);
-
-        let qa = new THREE.Quaternion().copy(this.camera.quaternion); // src quaternion
-        let qb = new THREE.Quaternion().setFromEuler(new THREE.Euler().copy(initCamera.rotation)); // dst quaternion
-        let qm = new THREE.Quaternion();
-
-        let o = { t: 0 };
-        const cameraRotation = new TWEEN.Tween(o);
-        cameraRotation.to({ t: 1 }, runTime);
-
-        cameraToTarget.onComplete(() => {
-            useDispatchSignal("tweenRemove", cameraToTarget);
-        });
-        cameraRotation.onUpdate(() => {
-            // THREE.Quaternion.slerp(qa, qb, qm, o.t);
-            qm.slerpQuaternions(qa, qb, o.t)
-            this.camera.quaternion.set(qm.x, qm.y, qm.z, qm.w);
-        })
-        cameraRotation.onComplete(() => {
-            useDispatchSignal("tweenRemove", cameraRotation);
-            done();
-        })
-        //如果需要相机飞行完成时再调用旋转，则注释 cameraRotation.start()且取消cameraToTarget.chain(cameraRotation)的注释
-        // cameraToTarget.chain(cameraRotation);
-        cameraToTarget.start();
-        cameraRotation.start();
-        useDispatchSignal("tweenAdd", cameraToTarget);
-        useDispatchSignal("tweenAdd", cameraRotation);
-    }
-
-    /**
-     * orbitControls飞行至mesh
-     */
-    flyToMesh(mesh: THREE.Object3D, runTime: number, distanceCoefficient = 4, done = () => {
-    }) {
-        const center = new THREE.Vector3();
-        const delta = new THREE.Vector3();
-
-        const box = new THREE.Box3();
-        box.setFromObject(mesh);
-        box.getCenter(center);
-
-        const distance = box.getBoundingSphere(new THREE.Sphere()).radius;
-        delta.set(0, 0, 1);
-        delta.multiplyScalar(distance * distanceCoefficient);
-
-        const targetCamera = this.camera.clone();
-        delta.applyQuaternion(targetCamera.quaternion);
-        targetCamera.position.copy(center).add(delta);
-
-        const controlsToTarget = new TWEEN.Tween(this.modules.controls.target);
-        controlsToTarget.to(center, runTime / 2);
-        controlsToTarget.onComplete(() => {
-            useDispatchSignal("tweenRemove", controlsToTarget);
-        });
-        controlsToTarget.start();
-        useDispatchSignal("tweenAdd", controlsToTarget);
-
-        this.flyToCamera(targetCamera, runTime, done);
     }
 
     // 20250108：方法好似多余，上面通过projectConfigStore设置了，运行三个月无误后删除
@@ -490,11 +371,10 @@ export class Viewport {
     }
 
     animation() {
-        this.modules.tweenManager?.update();
-
-        let needsUpdate = false;
-
         const delta = this.clock.getDelta();
+
+        let needsUpdate = this.modules.controls.update(delta)
+
         const mixer = Helper.mixer;
         if (mixer) {
             // @ts-ignore Animations
@@ -508,13 +388,19 @@ export class Viewport {
                 if (window.editor.selected !== null) {
                     // 避免某些蒙皮网格的帧延迟效应(e.g. Michelle.glb)
                     window.editor.selected.updateWorldMatrix(false, true);
-                    //  选择框应反映当前动画状态
-                    this.selectionBox.box.setFromObject(window.editor.selected, true);
+
+                    if (!this.modules.effect.enabled){
+                        //  选择框应反映当前动画状态
+                        this.selectionBox.box.setFromObject(window.editor.selected, true);
+                    }
                 }
             }
         }
 
-        this.modules.controls?.update();
+        if (operationStore.menuList.autoRotate.active) {
+            this.modules.controls.azimuthAngle += operationStore.autoRotateSpeed * delta * THREE.MathUtils.DEG2RAD;
+        }
+
         this.modules.viewCube.update();
         this.modules.miniMap.update();
         this.modules.shaderMaterialManager.update();

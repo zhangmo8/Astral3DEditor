@@ -1,13 +1,16 @@
 import * as THREE from "three";
 import { Viewport } from "./Viewport";
-import {useDispatchSignal} from "@/hooks/useSignal";
-import {t} from "@/language";
+import { useDispatchSignal } from "@/hooks/useSignal";
+import { t } from "@/language";
+import { MenuOperation } from "@/utils/preview/menuOperation";
 
-let RoamPdFn;
+let roamPdFn, pointerlockFn;
+
 export class ViewportOperation {
-    viewport:Viewport;
+    viewport: Viewport;
 
-    initCamera:THREE.PerspectiveCamera | undefined;
+    // 初始化控制器状态
+    initControlsState: string = "{}";
     // 漫游模式下，上次退出时相机位置
     lastRoadCameraPos = new THREE.Vector3();
 
@@ -19,13 +22,13 @@ export class ViewportOperation {
      * 还原视角
      */
     resetCameraView() {
-        if(!this.initCamera) return;
+        if (this.initControlsState === "{}") return;
 
-        useDispatchSignal("flyTo",this.initCamera, 600);
+        this.viewport.modules.controls.fromJSON(this.initControlsState, true);
     }
-    
+
     /* 选点漫游 */
-    enterRoaming(){
+    enterRoaming() {
         window.$message?.info(t("preview.Please select initial position"));
 
         const canvas = this.viewport.renderer.domElement;
@@ -46,15 +49,11 @@ export class ViewportOperation {
             if (intersects && intersects.length > 0) {
                 const intersect = intersects[0];
 
-                // 第三人称
-                this.viewport.modules.controls.maxPolarAngle = Math.PI / 2;
-                this.viewport.modules.controls.minDistance = 2.5;
-                this.viewport.modules.controls.maxDistance = 2.5;
+                // 锁定鼠标指针
+                this.viewport.modules.controls.lockPointer();
 
-                useDispatchSignal("sceneGraphChanged");
-
-                canvas.removeEventListener("pointerdown", RoamPdFn);
-                RoamPdFn = undefined;
+                canvas.removeEventListener("pointerdown", roamPdFn);
+                roamPdFn = undefined;
 
                 this.lastRoadCameraPos.copy(this.viewport.camera.position);
 
@@ -62,22 +61,46 @@ export class ViewportOperation {
                 this.viewport.modules.roaming.playerInitPos.copy(point);
 
                 this.viewport.modules.roaming.startRoaming();
+
+                // 第三人称
+                this.viewport.modules.controls.maxPolarAngle = Math.PI / 2;
+                this.viewport.modules.controls.minDistance = 0.8;
+                this.viewport.modules.controls.maxDistance = 0.8;
+                this.viewport.modules.controls.distance = 0.8;
+
+                useDispatchSignal("sceneGraphChanged");
             }
             return null;
         }
 
+        pointerlockFn = () => {
+            if (document.pointerLockElement) {
+                // console.log("指针被锁定到：", document.pointerLockElement);
+            } else {
+                // console.log("指针锁定状态现已解锁");
+                MenuOperation.roaming();
+            }
+        }
+        // 监听鼠标锁定取消
+        document.addEventListener("pointerlockchange", pointerlockFn);
+
         // 监听选取初始位置
-        RoamPdFn = handlePointerDown.bind(this);
-        canvas.addEventListener("pointerdown", RoamPdFn);
+        roamPdFn = handlePointerDown.bind(this);
+        canvas.addEventListener("pointerdown", roamPdFn);
     }
 
     /* 退出漫游 */
-    leaveRoaming(){
+    leaveRoaming() {
         this.viewport.modules.roaming.exitRoaming(this.lastRoadCameraPos);
 
-        if(RoamPdFn){
-            this.viewport.renderer.domElement.removeEventListener("pointerdown", RoamPdFn);
-            RoamPdFn = undefined;
+        if (roamPdFn) {
+            this.viewport.renderer.domElement.removeEventListener("pointerdown", roamPdFn);
+            roamPdFn = null;
+        }
+
+        if (pointerlockFn) {
+            document.removeEventListener("pointerlockchange", pointerlockFn);
+            pointerlockFn = null;
         }
     }
 }

@@ -100,15 +100,10 @@ const editorSignals: SignalRegister = {
 const viewportSignals:SignalRegister = {
 	loadDefaultEnvAndBackground:new Signal(),
 	IFCPropertiesVisible:new Signal(),
-	// 补间动画管理
-	tweenAdd:new Signal(),
-	tweenRemove:new Signal(),
 	// 启用/禁用后处理
 	effectEnabledChange:new Signal(),
 	// 后处理通道配置变更
 	effectPassConfigChange:new Signal(),
-	// 相机飞行
-	flyTo:new Signal(),
 }
 
 /**
@@ -137,7 +132,6 @@ const drawingSignals:SignalRegister = {
  * 预览相关
  */
 const previewSignals:SignalRegister = {
-	autoRotateConfigModal:new Signal(), // 自动旋转配置弹窗
 }
 
 /**

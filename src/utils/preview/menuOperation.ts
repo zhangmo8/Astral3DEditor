@@ -4,7 +4,6 @@ import {
     usePreviewOperationStore,
     usePreviewOperationStoreWithOut
 } from "@/store/modules/previewOperation";
-import {useDispatchSignal} from "@/hooks/useSignal";
 import {MeasureMode} from "@/core/utils/Measure";
 
 /**
@@ -30,11 +29,6 @@ export class MenuOperation {
 
     static autoRotate(){
         operationStore.menuList.autoRotate.active = !operationStore.menuList.autoRotate.active;
-
-        window.viewer.modules.controls.autoRotate = operationStore.menuList.autoRotate.active;
-
-        // 打开自动旋转配置面板
-        useDispatchSignal("autoRotateConfigModal",operationStore.menuList.autoRotate.active,window.viewer.modules.controls.autoRotateSpeed);
     }
 
     static cutting(){

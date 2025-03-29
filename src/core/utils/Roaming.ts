@@ -5,19 +5,20 @@
  * @description 漫游类，使用BVH检测碰撞,人物模型必须包含动画：Enter,Idle, Walking, WalkingBackward,Jumping
  */
 import * as THREE from 'three';
-import {BufferAttribute, BufferGeometry} from "three";
-import {RoundedBoxGeometry} from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import {GenerateMeshBVHWorker} from '@/workers/bvh/GenerateMeshBVHWorker.js';
-import {useDispatchSignal} from "@/hooks/useSignal";
-import {getMeshByInstancedMesh} from "@/utils/common/scenes";
-import {RoamingStatus} from "@/core/utils/RoamingStatus";
+import CameraControls from 'camera-controls';
+import { BufferAttribute, BufferGeometry } from "three";
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { GenerateMeshBVHWorker } from '@/workers/bvh/GenerateMeshBVHWorker.js';
+import { useDispatchSignal } from "@/hooks/useSignal";
+import { getMeshByInstancedMesh } from "@/utils/common/scenes";
+import { RoamingStatus } from "@/core/utils/RoamingStatus";
 
 let keyDownFn, keyUpFn;
 
 export default class Roaming {
     private scene: THREE.Scene;
     private camera: THREE.Camera;
-    private orbitControl: any;
+    private controls: CameraControls;
 
     group: THREE.Group;
     private collider: THREE.Mesh | undefined; // 碰撞器
@@ -49,10 +50,10 @@ export default class Roaming {
     private generateMeshBVHWorker: GenerateMeshBVHWorker;
     private personStatus: RoamingStatus | null = null;
 
-    constructor(viewport,controls) {
+    constructor(viewport, controls) {
         this.scene = viewport.scene;
-        this.camera =viewport.camera;
-        this.orbitControl = controls;
+        this.camera = viewport.camera;
+        this.controls = controls;
 
         keyDownFn = this.keyDown.bind(this);
         window.addEventListener('keydown', keyDownFn);
@@ -64,19 +65,20 @@ export default class Roaming {
         this.group.name = "es-3d-roaming-group";
         this.group.visible = false;
 
-        this.mergeWorker = new Worker(new URL('../../workers/mergeGeometries.worker.ts', import.meta.url), {type: 'module'});
+        this.mergeWorker = new Worker(new URL('../../workers/mergeGeometries.worker.ts', import.meta.url), { type: 'module' });
         this.generateMeshBVHWorker = new GenerateMeshBVHWorker();
 
         this.addPlayer().then(data => {
             // player:胶囊 person:人物  clips:动画
-            const {player, person, clips} = data;
+            const { player, person, clips } = data;
             this.player = player;
             this.person = person;
+            // @ts-ignore
             this.group.add(this.player);
             this.group.add(this.person);
 
             // 漫游人物动画状态机
-            this.personStatus = new RoamingStatus(this.person,clips);
+            this.personStatus = new RoamingStatus(this.person, clips);
         });
     }
 
@@ -86,22 +88,22 @@ export default class Roaming {
         switch (e.code) {
             case 'KeyW':
                 this.fwdPressed = true;
-                this.personStatus?.setStatus("w",true);
+                this.personStatus?.setStatus("w", true);
                 break;
             case 'KeyS':
                 this.bkdPressed = true;
-                this.personStatus?.setStatus("s",true);
+                this.personStatus?.setStatus("s", true);
                 break;
             case 'KeyD':
                 this.rgtPressed = true;
-                this.personStatus?.setStatus("d",true);
+                this.personStatus?.setStatus("d", true);
                 break;
             case 'KeyA':
                 this.lftPressed = true;
-                this.personStatus?.setStatus("a",true);
+                this.personStatus?.setStatus("a", true);
                 break;
             case 'Space':
-                if(this.personStatus?.keyDownStatus.space) return;
+                if (this.personStatus?.keyDownStatus.space) return;
 
                 if (this.playerIsOnGround) {
                     // 跳跃动画有30FPS准备动作
@@ -110,13 +112,13 @@ export default class Roaming {
                         this.playerIsOnGround = false;
                     }, 800)
                 }
-                this.personStatus?.setStatus("space",true);
+                this.personStatus?.setStatus("space", true);
                 break;
             case "ShiftLeft":
             case "ShiftRight":
-                if(this.personStatus?.isWalkingForward){
+                if (this.personStatus?.isWalkingForward) {
                     this.playerSpeed = 6;
-                    this.personStatus?.setStatus("shift",true);
+                    this.personStatus?.setStatus("shift", true);
                 }
                 break;
             case 'KeyV': // 切换第一/第三人称视角
@@ -124,16 +126,18 @@ export default class Roaming {
 
                 if (this.firstPerson) { //人称切换
                     // 第一人称
-                    this.orbitControl.maxPolarAngle = Math.PI / 2;
-                    this.orbitControl.minDistance = 2.5;
-                    this.orbitControl.maxDistance = 2.5;
+                    this.controls.maxPolarAngle = Math.PI / 2;
+                    this.controls.minDistance = 0.8;
+                    this.controls.maxDistance = 0.8;
+                    this.controls.distance = 0.8;
                 } else {
-                    this.orbitControl.maxPolarAngle = Math.PI / 2;
-                    this.orbitControl.minDistance = 8;
-                    this.orbitControl.maxDistance = 8;
+                    this.controls.maxPolarAngle = Math.PI / 2;
+                    this.controls.minDistance = 6;
+                    this.controls.maxDistance = 6;
+                    this.controls.distance = 6;
                 }
 
-                this.orbitControl.update();
+                this.controls.update(0.016);
                 break;
         }
     }
@@ -143,25 +147,25 @@ export default class Roaming {
 
         switch (e.code) {
             case 'KeyW':
-                this.personStatus?.setStatus("w",false);
+                this.personStatus?.setStatus("w", false);
                 this.fwdPressed = false;
                 break;
             case 'KeyS':
-                this.personStatus?.setStatus("s",false);
+                this.personStatus?.setStatus("s", false);
                 this.bkdPressed = false;
                 break;
             case 'KeyD':
-                this.personStatus?.setStatus("d",false);
+                this.personStatus?.setStatus("d", false);
                 this.rgtPressed = false;
                 break;
             case 'KeyA':
-                this.personStatus?.setStatus("a",false);
+                this.personStatus?.setStatus("a", false);
                 this.lftPressed = false;
                 break;
             case "ShiftLeft":
             case "ShiftRight":
                 this.playerSpeed = 3;
-                this.personStatus?.setStatus("shift",false);
+                this.personStatus?.setStatus("shift", false);
                 break;
         }
     }
@@ -174,13 +178,15 @@ export default class Roaming {
                 new RoundedBoxGeometry(0.5, 1.7, 0.5, 10, 0.5),
                 new THREE.MeshStandardMaterial()
             )
-            cylinder.geometry.translate(0, -0.5, 0);
+            cylinder.geometry.translate(0, -0.6, 0);
             // @ts-ignore
             cylinder.capsuleInfo = {
                 radius: 0.4,
                 segment: new THREE.Line3(new THREE.Vector3(), new THREE.Vector3(0, -1.0, 0.0))
             }
             cylinder.name = 'es-3d-roaming-cylinder';
+            // cylinder.material.transparent = true;
+            // cylinder.material.opacity = 0.3;
             cylinder.visible = false;
 
             // 加载人物模型glb
@@ -192,16 +198,16 @@ export default class Roaming {
                     const person = result.scene as THREE.Group;
                     person.name = "es-3d-roaming-player";
 
-                    resolve({player: cylinder, person: person, clips: result.animations});
+                    resolve({ player: cylinder, person: person, clips: result.animations });
                 });
             }
 
             // 从本地DB读取人物模型
-            window.editor.storage.getModel("player").then((file:Blob | null) => {
+            window.editor.storage.getModel("player").then((file: Blob | null) => {
                 if (!file) {
                     // 加载默认人物模型
                     fetch("/static/model/person/Jackie.glb").then(res => res.blob()).then(blob => {
-                        window.editor.storage.setModel("player",blob)
+                        window.editor.storage.setModel("player", blob)
                         done(blob);
                     })
                 } else {
@@ -227,6 +233,7 @@ export default class Roaming {
                     this.collider.name = "es-3d-roaming-collider";
                     this.collider.visible = false;
 
+                    // @ts-ignore
                     this.group.add(this.collider);
 
                     resolve("");
@@ -247,7 +254,7 @@ export default class Roaming {
             return new Promise(resolve => {
                 const cloneGeom = (me) => {
                     // 检查对应属性是否存在
-                    if(!me.geometry.attributes || !me.geometry.attributes.position || me.geometry.attributes.position.isInterleavedBufferAttribute) return;
+                    if (!me.geometry.attributes || !me.geometry.attributes.position || me.geometry.attributes.position.isInterleavedBufferAttribute) return;
 
                     const geom = me.geometry.clone();
                     geom.applyMatrix4(me.matrixWorld);
@@ -274,39 +281,39 @@ export default class Roaming {
                     }
 
                     // 手动纠正有些模型没有顶点索引的问题
-                    if(geom.index) geom.index = null;
+                    if (geom.index) geom.index = null;
 
                     this.mergeWorker.postMessage({
-                        type:"push",
+                        type: "push",
                         geometry: geom
                     })
                 }
 
                 this.scene.traverseByCondition(c => {
                     // requestIdleCallback(()=>{
-                        // @ts-ignore 只合并网格
-                        if (c.geometry) {
-                            // @ts-ignore
-                            if (!c.isInstancedMesh) {
-                                cloneGeom(c);
-                            } else {
-                                const meshes = getMeshByInstancedMesh(c as THREE.InstancedMesh);
-                                meshes.forEach((m: THREE.Mesh) => {
-                                    cloneGeom(m);
-                                });
-                            }
+                    // @ts-ignore 只合并网格
+                    if (c.geometry) {
+                        // @ts-ignore
+                        if (!c.isInstancedMesh) {
+                            cloneGeom(c);
+                        } else {
+                            const meshes = getMeshByInstancedMesh(c as THREE.InstancedMesh);
+                            meshes.forEach((m: THREE.Mesh) => {
+                                cloneGeom(m);
+                            });
                         }
+                    }
                     // })
                 }, (child) => !child.ignore && child.visible)
 
                 // requestIdleCallback(()=>{
-                    this.mergeWorker.postMessage({
-                        type: "merge"
-                    })
+                this.mergeWorker.postMessage({
+                    type: "merge"
+                })
                 // })
 
                 this.mergeWorker.onmessage = (event) => {
-                    if(!event.data.geometry) return;
+                    if (!event.data.geometry) return;
 
                     mergedGeometry = event.data.geometry;
                     mergedGeometry.__proto__ = BufferGeometry.prototype;
@@ -315,7 +322,7 @@ export default class Roaming {
                     mergedGeometry.attributes.normal && (mergedGeometry.attributes.normal.__proto__ = BufferAttribute.prototype);
 
                     // 删除uv属性
-                    if(mergedGeometry.attributes.uv){
+                    if (mergedGeometry.attributes.uv) {
                         mergedGeometry.deleteAttribute("uv");
                     }
 
@@ -347,10 +354,13 @@ export default class Roaming {
         // 播放模型进入动画
         this.personStatus?.init();
 
-        this.camera.position.sub(this.orbitControl.target);
-        this.orbitControl.target.copy(player.position);
+        const _target = new THREE.Vector3();
+        this.controls.getTarget(_target);
+        this.camera.position.sub(_target);
+        this.controls.setTarget(player.position.x, player.position.y + 2, player.position.z,false);
+        this.controls.distance = this.firstPerson ? 0.8 : 6;
         this.camera.position.add(player.position);
-        this.orbitControl.update();
+        this.controls.update(0.016);
     }
 
     // 进入漫游
@@ -370,11 +380,11 @@ export default class Roaming {
 
         this.camera.position.copy(lastRoadCameraPos);
 
-        this.orbitControl.maxPolarAngle = Math.PI;
-        this.orbitControl.minDistance = 0;
-        this.orbitControl.maxDistance = Infinity;
+        this.controls.maxPolarAngle = Math.PI;
+        this.controls.minDistance = 0;
+        this.controls.maxDistance = Infinity;
 
-        this.orbitControl.update();
+        this.controls.update(0.016);
         this.isRoaming = false;
 
         // 停用混合器上所有预定的动作
@@ -384,7 +394,7 @@ export default class Roaming {
     }
 
     render(delta: number) {
-        if(!delta) return;
+        if (!delta) return;
 
         const player = this.player as THREE.Object3D;
 
@@ -398,7 +408,7 @@ export default class Roaming {
         player.position.addScaledVector(this.playerVelocity, delta);
 
         /* 人物移动 */
-        const angle = this.orbitControl.getAzimuthalAngle();
+        const angle = this.controls.azimuthAngle;
         if (this.fwdPressed) {
             this.tempVector.set(0, 0, -1).applyAxisAngle(this.upVector, angle);
             player.position.addScaledVector(this.tempVector, this.playerSpeed * delta);
@@ -480,14 +490,18 @@ export default class Roaming {
         }
 
         // 调整相机
-        const v = new THREE.Vector3(player.position.x, player.position.y + 0.8, player.position.z);
-        this.camera.position.sub(this.orbitControl.target);
-        this.orbitControl.target.copy(v);
+        const v = new THREE.Vector3(player.position.x, player.position.y + 0.2, player.position.z);
+        const _target = new THREE.Vector3();
+        this.controls.getTarget(_target);
+        this.camera.position.sub(_target);
+        this.controls.setTarget(v.x, v.y, v.z, false);
+        this.controls.distance = this.firstPerson ? 0.8 : 6;
         this.camera.position.add(v);
+        this.controls.polarAngle = Math.PI / 2;
 
         if (this.person) {
             const p = player.position.clone();
-            this.person.position.set(p.x, p.y - 1.4, p.z);
+            this.person.position.set(p.x, p.y - 1.415, p.z);
         }
 
         //如果玩家跌得太低，将他们的位置重置到起点
