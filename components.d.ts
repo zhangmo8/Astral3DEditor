@@ -32,6 +32,7 @@ declare module 'vue' {
     EsTexture: typeof import('./src/components/es/EsTexture.vue')['default']
     EsTip: typeof import('./src/components/es/EsTip.vue')['default']
     Fullscreen: typeof import('./src/components/header/navigation/Fullscreen.vue')['default']
+    HtmlPlane: typeof import('./src/components/assets/assetsLibrary/HtmlPlane.vue')['default']
     IFCProperties: typeof import('./src/components/viewport/IFCProperties.vue')['default']
     Image: typeof import('./src/components/drawing/toolbar/Image.vue')['default']
     ImportExport: typeof import('./src/components/header/navigation/ImportExport.vue')['default']

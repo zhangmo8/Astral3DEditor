@@ -170,7 +170,7 @@ export class Viewport {
         this.container.appendChild(renderer.domElement);
 
         this.css2DRenderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
-        this.css2DRenderer.domElement.setAttribute("id", "es-3d-preview-css2DRenderer");
+        this.css2DRenderer.domElement.setAttribute("id", "astral-3d-preview-css2DRenderer");
         this.css2DRenderer.domElement.style.position = 'absolute';
         this.css2DRenderer.domElement.style.top = '0px';
         this.css2DRenderer.domElement.style.pointerEvents = 'none';

@@ -7,7 +7,7 @@
 
     <n-tabs default-value="bim" animated type="line" justify-content="space-around" class="!h-60%" pane-class="layout-assets-tab-pane">
       <n-tab-pane name="library" :tab="t('layout.assets[\'Resource library\']')" display-directive="show">
-        <AssetsLibrary></AssetsLibrary>
+        <AssetsLibrary />
       </n-tab-pane>
       <n-tab-pane name="cad" tab="CAD" display-directive="show">
         <CadLibrary />

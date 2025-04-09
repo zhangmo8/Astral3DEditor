@@ -335,6 +335,10 @@ export default {
 				'Depth Write': '深度缓冲',
 				Wireframe: '线框',
 			},
+            'Html plane': 'Html面板',
+            htmlPlane:{
+                'Factory equipment': '工厂设备',
+            },
 			"Scene theme":"场景主题",
 			sceneTheme:{
 				'Blue tone': '蓝田日暖玉生烟',

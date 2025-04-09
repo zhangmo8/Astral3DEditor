@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import CameraControls from 'camera-controls';
+import { CSS3DRenderer } from "three/examples/jsm/renderers/CSS3DRenderer";
 import {TransformControls} from "three/examples/jsm/controls/TransformControls";
-
 import {SetPositionCommand} from "@/core/commands/SetPositionCommand";
 import {SetRotationCommand} from "@/core/commands/SetRotationCommand";
 import {SetScaleCommand} from "@/core/commands/SetScaleCommand";
@@ -48,7 +48,8 @@ export class Viewport {
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     private sceneHelpers: THREE.Scene;
-    renderer: THREE.WebGLRenderer | undefined;
+    renderer: THREE.WebGLRenderer | undefined; 
+    css3DRenderer: CSS3DRenderer = new CSS3DRenderer();
     private pmremGenerator: THREE.PMREMGenerator | undefined;
 
     private showSceneHelpers: boolean = true;
@@ -153,6 +154,17 @@ export class Viewport {
         // 初始化后处理
         if(this.modules.effect.enabled){
             this.modules.effect.createComposer();
+        }
+
+        // 防止重复添加
+        if (this.css3DRenderer.domElement.parentNode !== this.container) {
+            this.css3DRenderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
+            this.css3DRenderer.domElement.setAttribute("id", "astral-3d-css3DRenderer");
+            this.css3DRenderer.domElement.style.position = 'absolute';
+            this.css3DRenderer.domElement.style.top = '0px';
+            this.css3DRenderer.domElement.style.pointerEvents = 'none';
+
+            this.container.appendChild(this.css3DRenderer.domElement);
         }
 
         this.render();
@@ -399,6 +411,8 @@ export class Viewport {
         if (this.camera === window.editor.viewportCamera) {
             if (this.showSceneHelpers) this.renderer.render(this.sceneHelpers, this.camera);
         }
+
+        this.css3DRenderer.render(this.scene, window.editor.viewportCamera);
 
         endTime = performance.now();
         useDispatchSignal("sceneRendered", endTime - startTime);

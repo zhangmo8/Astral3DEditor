@@ -11,6 +11,7 @@ import { Selector } from './Viewport.Selector';
 import {useDrawingStoreWithOut} from "@/store/modules/drawing";
 import {DefaultSceneData, useSceneInfoStoreWithOut} from "@/store/modules/sceneInfo";
 import { useProjectConfigStoreWithOut } from "@/store/modules/projectConfig";
+import { ObjectLoader } from './loader/ObjectLoader';
 
 const { add:addSignal,dispatch, setActive } = useSignal();
 
@@ -496,7 +497,7 @@ class Editor {
 		//重新设置场景信息
 		sceneInfoStore.setData(json.sceneInfo || DefaultSceneData);
 
-		let loader = new THREE.ObjectLoader();
+		let loader = new ObjectLoader();
 		let camera = await loader.parseAsync(json.camera);
 
 		this.camera.copy(camera as THREE.PerspectiveCamera);

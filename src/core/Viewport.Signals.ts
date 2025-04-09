@@ -431,6 +431,9 @@ export class ViewportSignals {
                 FXAA.material.uniforms[ 'resolution' ].value.y = 1 / (this.viewport.container.offsetHeight * pixelRatio);
             }
         }
+
+        this.viewport.css3DRenderer.setSize(this.viewport.container.offsetWidth, this.viewport.container.offsetHeight);
+        
         this.render();
     }
 
