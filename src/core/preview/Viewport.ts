@@ -7,6 +7,7 @@
 import * as THREE from "three";
 import CameraControls from 'camera-controls';
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
+import { CSS3DRenderer } from "three/examples/jsm/renderers/CSS3DRenderer";
 // import WebGPURenderer from "three/examples/jsm/renderers/webgpu/WebGPURenderer";
 import { XRButton } from "three/examples/jsm/webxr/XRButton";
 import { useDispatchSignal } from "@/hooks/useSignal";
@@ -74,6 +75,7 @@ export class Viewport {
     renderer: THREE.WebGLRenderer;
 
     css2DRenderer: CSS2DRenderer = new CSS2DRenderer();
+    css3DRenderer: CSS3DRenderer = new CSS3DRenderer();
 
     clock: THREE.Clock = new THREE.Clock();
     private readonly xrButton: HTMLElement;
@@ -169,15 +171,26 @@ export class Viewport {
         renderer.domElement.style.touchAction = "none";
         this.container.appendChild(renderer.domElement);
 
-        this.css2DRenderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
-        this.css2DRenderer.domElement.setAttribute("id", "astral-3d-preview-css2DRenderer");
-        this.css2DRenderer.domElement.style.position = 'absolute';
-        this.css2DRenderer.domElement.style.top = '0px';
-        this.css2DRenderer.domElement.style.pointerEvents = 'none';
-
         // 防止重复添加
         if (this.css2DRenderer.domElement.parentNode !== this.container) {
+            this.css2DRenderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
+            this.css2DRenderer.domElement.setAttribute("id", "astral-3d-preview-css2DRenderer");
+            this.css2DRenderer.domElement.style.position = 'absolute';
+            this.css2DRenderer.domElement.style.top = '0px';
+            this.css2DRenderer.domElement.style.pointerEvents = 'none';
+
             this.container.appendChild(this.css2DRenderer.domElement);
+        }
+
+        // 防止重复添加
+        if (this.css3DRenderer.domElement.parentNode !== this.container) {
+            this.css3DRenderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
+            this.css3DRenderer.domElement.setAttribute("id", "astral-3d-preview-css3DRenderer");
+            this.css3DRenderer.domElement.style.position = 'absolute';
+            this.css3DRenderer.domElement.style.top = '0px';
+            this.css3DRenderer.domElement.style.pointerEvents = 'none';
+
+            this.container.appendChild(this.css3DRenderer.domElement);
         }
 
         return renderer;
@@ -456,6 +469,8 @@ export class Viewport {
         this.renderer.render(this.sceneHelpers, this.camera);
         // css2d 在sceneHelpers内
         this.css2DRenderer.render(this.sceneHelpers, this.camera);
+
+        this.css3DRenderer.render(this.scene, this.camera);
 
         // this.renderer.autoClear = true;
 

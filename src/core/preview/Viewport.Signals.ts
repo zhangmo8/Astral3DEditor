@@ -98,7 +98,10 @@ export class ViewportSignals {
         if (this.viewport.css2DRenderer) {
             this.viewport.css2DRenderer.setSize(this.viewport.container.offsetWidth, this.viewport.container.offsetHeight);
         }
-
+        if (this.viewport.css3DRenderer){
+            this.viewport.css3DRenderer.setSize(this.viewport.container.offsetWidth, this.viewport.container.offsetHeight);
+        }
+        
         this.viewport.render();
     };
 
