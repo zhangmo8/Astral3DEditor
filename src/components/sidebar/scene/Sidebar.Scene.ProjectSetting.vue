@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import {ref,computed} from "vue";
+import {computed} from "vue";
 import {t} from "@/language";
 import {useSceneInfoStore} from "@/store/modules/sceneInfo";
 import {SCENE_TYPE} from "@/utils/common/constant";
+import {getViewportImage} from "@/utils/common/scenes";
 
 const sceneInfoStore = useSceneInfoStore();
 const data = computed(() => sceneInfoStore.data);
 
 function handleScreenshot(){
-  Msy3D.Utils.getViewportImage(document.querySelector("#viewport canvas:first-child")).then(image => {
+  getViewportImage(document.querySelector("#viewport canvas:first-child") as HTMLCanvasElement).then(image => {
     sceneInfoStore.screenshot = image.src;
   })
 }

@@ -189,3 +189,24 @@ export function setMetaData(object:IModel, key:string, value:any) {
 	}
 	metadata[keys[keys.length - 1]] = value;
 }
+
+/**
+ * 获取画布的截屏图片
+ * @param canvas 画布对象
+ * @returns Promise<HTMLImageElement> 截屏的图片对象
+ */
+export function getViewportImage(canvas: HTMLCanvasElement) {
+	return new Promise<HTMLImageElement>((resolve,rejcet) => {
+		canvas.toBlob((blob) => {
+			if (blob === null) {
+				rejcet('截屏失败');
+				return;
+			}
+
+			const image = new Image();
+			image.src = URL.createObjectURL(blob);
+
+			resolve(image);
+		});
+	});
+}

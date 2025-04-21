@@ -1,5 +1,3 @@
-declare const Msy3D:Msy3D
-
 declare interface Window {
 	$t:(s: string)=>string;
 	$cpt:(s: string)=>ComputedRef<string>;
