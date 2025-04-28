@@ -15,8 +15,12 @@
 
 通过以下方式获取最新动态和技术支持：
 
-[![WeChat Group](https://img.shields.io/badge/微信交流群-扫码加入-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/WeChatGroup.jpg)
-[![Contact Author](https://img.shields.io/badge/联系作者-个人微信-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/ContactMe.jpg)
+| [![QQ Group](https://img.shields.io/badge/QQ交流群-1040320579-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/QQGroup.jpg)                                                                         | [![Contact Author](https://img.shields.io/badge/联系作者-个人微信-07C160?logo=wechat&logoColor=white)](https://upyun.astraljs.com/static/images/ContactMe.jpg)                                                                      |
+|-----------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| <img src="https://upyun.astraljs.com/static/images/QQGroup.jpg" width="200"> | <img src="https://upyun.astraljs.com/static/images/ContactMe.jpg" width="200"> |
+
+
+
 
 ## 🚀 核心能力
 
