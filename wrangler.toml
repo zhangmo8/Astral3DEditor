@@ -6,8 +6,7 @@ bucket = "./dist"
 entry-point = "."
 
 [build]
-command = "yarn build"
+command = "pnpm build"
 
 [build.environment]
 NODE_VERSION = "18"
-YARN_VERSION = "1.22.22"
