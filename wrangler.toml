@@ -1,8 +1,0 @@
-name = "astral3deditor"
-compatibility_date = "2025-05-06"
-
-[build]
-command = "pnpm build"
-
-[build.environment]
-NODE_VERSION = "18"
